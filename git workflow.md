@@ -9,3 +9,29 @@ git switch andy-dev
 
 # 4. 把最新 main 合进 andy-dev
 git merge main
+
+# 5. 我自己的local branch 开发
+git add .
+git commit -m "Implement xxx"
+
+# 6. 最后push 到remote 自己的branch
+git push origin andy-dev
+
+# 7. 从remote自己的branch PR + code review 到remote main
+
+GitHub
+remote main
+   │
+   │ git pull
+   ↓
+local main
+   │
+   │ git merge main
+   ↓
+local andy-dev
+   │
+   │ coding + commit
+   │
+   │ git push
+   ↓
+remote andy-dev
