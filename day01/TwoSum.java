@@ -10,6 +10,8 @@ Output:
 
 public class TwoSum {
 
+    // twoSum here can be private method since only main method is using it. 
+    // it has to be statis since main method can call it directly without creating TwoSum object.
     public static int[] twoSum(int[] nums, int target) {
         // 这里放你自己的实现
         for (int i = 0; i < nums.length; i++) {
@@ -30,8 +32,4 @@ public class TwoSum {
 
         System.out.println(Arrays.toString(result));
     }
-}
-
-class classTest {
-
 }

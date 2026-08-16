@@ -1,6 +1,8 @@
 # Todo list for everyday
 
 Aug 15
-- [ ] Complete day01 practice
+- [X] Complete day01 practice
 - [ ] Apply for 20 jobs
-- [ ] modify resume second and third paragraphs
+- [ ] 准备面试 熟悉自己的experience 以及其中qa的经历加一点
+
+
