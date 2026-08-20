@@ -12,6 +12,6 @@ Aug 17
 - [X] EM16 dynamic link
 
 Aug 18-19
-- [ ] 根据JDs 出题 来做
+- [X] 根据JDs 出题 来做
 - [X] 投工作(sorce40 + 网站3个)
 - [ ] daily code题目
