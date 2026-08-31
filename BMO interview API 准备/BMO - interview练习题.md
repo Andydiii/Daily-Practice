@@ -100,11 +100,17 @@ The main components of an HTTP request are the HTTP method, the URL, headers, an
 The method tells the server what operation to perform, the URL identifies the target resource, headers provide additional information about the request, and the body contains the data being sent when needed.
 
 ## day02
+### status code 200
+all code 2xx means sucessful 
+
 ### What does status code `200 OK` mean?
 HTTP status code `200 OK` means the request was successfully received by server, processed by the server, and returned response.
 
 ### Difference between `200 OK` and `201 Created`.
 `200 OK` means the request was successfully processed by server. `201 Created` means the request was successfully processed and one new resource was created.
+
+### status code 4XX
+4XX all means something wrong with the request
 
 ### 204 No Content:
 `204 No Content` means the request was processed successfully, but the server has no response body to return.
@@ -125,3 +131,25 @@ Content-Type: application/json
 ```
 
 ### What does 401 Unauthorized mean?
+`401 Unauthorized` means the client is not authenticated properly due to missing authorization header/invalid token/expired token.
+
+### Difference between 401 Unauthorized and 403 Forbidden
+401 unauthorized: server does not know who client is(missing authorization header/invalid/expired token)
+403 Forbidden: Server knows who I am but I dont have permission to perform requested operation or I dont have permission to access the resource or both. `DELETE /admin/users/123` since this endpoint may requires admin.
+有可能是这个user是普通用户没有权限acess resource
+也有可能这个user指有读权限没有删除/写的权限
+也有可能这个user既是普通用户也只有读的权限。
+
+401 Unauthorized means the client is not authenticated properly(missing authorization header/invalid/expired token). 403 Forbidden means the client is authenticated but has no permission to perform the requested operation on the resource.
+
+### 404 Not Found
+404 Not Found means the server cannot find the requested resource.
+
+
+### status code 5XX
+all status code 5XX means there is something wrong when server process the request.
+
+### 500 Internal Server Error
+500 Internal Server Error means that while the server process the request, it got some unexpected errors and could not complete the request successfully(e.g. Database connection failed)
+
+

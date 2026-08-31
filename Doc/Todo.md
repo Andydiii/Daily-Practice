@@ -19,7 +19,17 @@ Aug 18-19
 Aug 20
 - [X] 准备面试 过一下已经有的内容 加一下必要内容 细节
 
-Aug 21
-- [ ] 学习jd的技术day2 & day 3
-- [ ] coding练习
+Aug 22
+- [X] 学习jd的技术day2 & day 3
+- [X] coding练习
 - [ ] 复习面试稿针对性练
+
+Aug 23
+- [ ] 学习jd的技术day2
+- [ ] coding练习 day2 弄完
+- [ ] 复习面试稿针对性练
+
+Aug 29
+- [ ] coding练习day2练完
+- [ ] 过简历
+- [ ] 
