@@ -76,6 +76,22 @@ for (String i : capitalCities.values()) {
 get the value of the key(if there exists one) or return default value
 ``
 
+## Stack(Last in first out)
+```java
+// Deque means Double-Ended Queue
+Deque<Integer> stack = new ArrayDeque<>();
+
+stack.push(10);  // 入栈
+stack.push(20);
+stack.pop();     // 出栈，得到 20
+stack.peek();    // 查看栈顶，得到 10
+
+push()    // 放入栈顶
+pop()     // 移除并返回栈顶
+peek()    // 查看栈顶
+isEmpty() // 是否为空
+```
+
 ## ArrayList
 import java.util.ArrayList;
 create a list: `ArrayList<String> lst = new ArratList<>()`
@@ -102,6 +118,8 @@ Read a line from user: `String title = scanner.nextLine();`
 string comparison: `DO NOT use == but use str1.equals(str2)`
 comapre with a char will alawys return false.
 convert to int: `parseInt(str)`
+length: `str.length()`
+access a index of string: `str.charAt(i)`
 
 
 # Encapsulation
