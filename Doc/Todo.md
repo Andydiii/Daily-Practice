@@ -33,3 +33,13 @@ Aug 29
 - [ ] coding练习day2练完
 - [ ] 过简历
 - [ ] 
+
+
+9.5-9.6
+- [X] 60 分钟：Best Time to Buy and Sell Stock
+- [X] 30 分钟：投递 1–3 个岗位 + 联系 1 个人
+- [X] 90 分钟：Spring Boot Day 1
+- [ ] 60 分钟：面试复盘
+- [ ] 5 分钟：SQL练习
+- [ ] 15 分钟：今日总结
+
