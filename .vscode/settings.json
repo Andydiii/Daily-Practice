@@ -1,0 +1,11 @@
+{
+    "sqltools.useNodeRuntime": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Booking Practice",
+            "database": "${workspaceFolder:Daily-Practice}/Java practice/SqlPractice/practice.db"
+        }
+    ]
+}
