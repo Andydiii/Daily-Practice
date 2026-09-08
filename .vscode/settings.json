@@ -6,6 +6,12 @@
             "driver": "SQLite",
             "name": "Booking Practice",
             "database": "${workspaceFolder:Daily-Practice}/Java practice/SqlPractice/practice.db"
+        },
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "Booking Practice",
+            "database": "${workspaceFolder:Daily-Practice-clean}/SqlPractice/practice.db"
         }
     ]
 }
