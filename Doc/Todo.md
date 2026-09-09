@@ -40,6 +40,13 @@ Aug 29
 - [X] 30 分钟：投递 1–3 个岗位 + 联系 1 个人
 - [X] 90 分钟：Spring Boot Day 1
 - [ ] 60 分钟：面试复盘
-- [ ] 5 分钟：SQL练习
-- [ ] 15 分钟：今日总结
+- [X] 5 分钟：SQL练习
+- [X] 15 分钟：今日总结
 
+9.7
+1. [ ] 投递/networking：30 分钟
+2. [X] LeetCode 704 Binary Search：60 分钟
+3. [ ] Spring Boot GET /tasks：90 分钟
+4. [ ] SQL HAVING 和聚合：45 分钟
+5. [ ] React/JavaScript 基础：45 分钟
+6. [ ] Todo App 入门 System Design：30 分钟
