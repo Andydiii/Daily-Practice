@@ -218,6 +218,7 @@ String display = task.isCompleted() ? "[x]" : "[ ]";
 ``` 
 
 # package
+## Basics
 ```java
 //是在告诉 Java：这个 class 属于名为 TodoList 的 package（包）。
 package TodoList;
@@ -242,3 +243,24 @@ java TodoList.ContainsDuplicate
 TodoList.ContainsDuplicate
 ```
 
+## Package in Springboot app
+```
+src/main/java/          ← Maven 的 Java 源代码目录
+com/andy/todo_api/      ← Java package
+Task.java               ← class
+
+如果写成：
+package java.com.andy.todo_api;
+对应路径反而应该是：
+src/main/java/java/com/andy/todo_api/Task.java
+而且 java.* 是 Java 标准库保留的命名空间，例如：
+java.lang
+java.util
+java.time
+
+com → 组织类型
+andy → 个人或公司
+todo_api → 项目名称
+
+src/main/java 告诉 Maven“Java 代码从这里开始”，package 只从它后面的目录开始计算。
+```
