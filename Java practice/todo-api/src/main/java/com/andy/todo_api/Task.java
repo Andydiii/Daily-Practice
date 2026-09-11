@@ -5,14 +5,14 @@ public class Task {
     private String title;
     private boolean completed;
 
-    // constructor 只能
+    // constructor
     public Task(int id, String title, boolean completed) {
         this.id = id;
         this.title = title;
         this.completed = completed;
     }
 
-    public int getID() {
+    public int getId() {
         return id;
     }
 

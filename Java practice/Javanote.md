@@ -1,4 +1,13 @@
 # OPP
+what is interface. what is the difference between interface and class.
+In java, a class is something that can contain actual data and behavior. An interface is mainly a contract that says what behavior a class must provide. e.g.
+```java
+public interface Animal {
+    void makeSound();
+}
+```
+This says: any class cliam be to an `Animal` must have a `makeSound()` method.
+
 
 # public/private static/non-static method:
 **public/private**: who can call me? \
@@ -264,3 +273,31 @@ todo_api → 项目名称
 
 src/main/java 告诉 Maven“Java 代码从这里开始”，package 只从它后面的目录开始计算。
 ```
+
+
+
+# springboot
+Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
+```java
+@RestController
+public class TaskController {
+    @GetMapping("/tasks")
+    public List<Task> getTasks() {
+        List<Task> tasks = new ArrayList<Task>();
+        Task task = new Task(1, "Task 1", false);
+        Task task2 = new Task(2, "Task 2 new", false);
+        tasks.add(task);
+        tasks.add(task2);
+        return tasks;
+    }
+}
+```
+
+an HTTP response can’t send Java objects directly. They need to be converted into a format such as JSON. That conversion is called serialization. The getter’s name determines the JSON property name; its return value determines the JSON value.
+
+| Getter          | JSON field    | Value comes from        |
+| --------------- | ------------- | ----------------------- |
+| `getId()`       | `"id"`        | Calling `getId()`       |
+| `getTitle()`    | `"title"`     | Calling `getTitle()`    |
+| `isCompleted()` | `"completed"` | Calling `isCompleted()` |
+
