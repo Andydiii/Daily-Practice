@@ -46,7 +46,8 @@ Aug 29
 9.7
 1. [ ] 投递/networking：30 分钟
 2. [X] LeetCode 704 Binary Search：60 分钟
-3. [ ] Spring Boot GET /tasks：90 分钟
-4. [ ] SQL HAVING 和聚合：45 分钟
-5. [ ] React/JavaScript 基础：45 分钟
-6. [ ] Todo App 入门 System Design：30 分钟
+3. [X] Spring Boot GET /tasks：90 分钟
+4. [X] review binary search
+5. [X] SQL HAVING 和聚合：45 分钟
+6. [ ] React/JavaScript 基础：45 分钟
+7. [ ] Todo App 入门 System Design：30 分钟
