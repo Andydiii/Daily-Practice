@@ -10,3 +10,7 @@ Maven需要从这里读取项目配置。
 cd "/Users/andyliu/Desktop/Daily-Practice/Java practice/todo-api"
 ./mvnw spring-boot:run
 ```
+backend:
+http://localhost:8080/tasks
+
+frontend:
