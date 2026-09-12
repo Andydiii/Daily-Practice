@@ -51,3 +51,12 @@ Aug 29
 5. [X] SQL HAVING 和聚合：45 分钟
 6. [ ] React/JavaScript 基础：45 分钟
 7. [ ] Todo App 入门 System Design：30 分钟
+
+9.11
+1. [ ] continue local setup
+2. [X] DD & git 
+3. [ ] finish day2
+4. [ ] day3 half
+5. [ ] apply jobs
+6. [ ] look for coach
+7. [ ] hair product 
