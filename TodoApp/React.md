@@ -1,7 +1,53 @@
+# props. 
+## Example 1
+```jsx
+// props is the parameter name, TaskCardProps is TypeScript’s syntax to declare the parameter type
+// file a defined the Taskcard function
+function TaskCard(props: TaskCardProps) {
+    return (
+        <div>
+            <h2>{props.title}</h2>
+        </div>
+    )
+}
+
+// file b use the TaskCard
+function App() {
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+      <TaskCard title="practice java"/>
+    </>
+  )
+}
+
+```
 Props are values a component receives from its parent—for example, a task’s title.
+
+
 State is a component’s memory that it can update—for example, whether its details are expanded.
 
 ESLint 代码检查工具
+
+
+
+# Type
+```jsx
+// TaskCardProps is its type—the rules that object must follow.
+type TaskCardProps = {
+  title: string
+}
+function TaskCard(props: TaskCardProps) {}
+
+// or we can do this too instead of predefine the type
+function TaskCard(props: { title: string }) {}
+
+// the parent level must defined the fields required in the type.
+<TaskCard title="Learn React"/>
+
+```
+
 
 # export
 ## export default TaskCard vs export function TaskCard() { ... }

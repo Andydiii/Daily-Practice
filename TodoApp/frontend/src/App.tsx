@@ -10,7 +10,7 @@ function App() {
 
   return (
     <>
-      <TaskCard />
+      <TaskCard title="practice java"/>
     </>
   )
 }
