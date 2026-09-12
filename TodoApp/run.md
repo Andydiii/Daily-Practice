@@ -14,3 +14,6 @@ backend:
 http://localhost:8080/tasks
 
 frontend:
+npm.cmd install
+npm.cmd run dev
+http://localhost:5173/
