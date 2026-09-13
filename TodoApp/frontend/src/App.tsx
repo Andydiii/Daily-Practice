@@ -24,13 +24,20 @@ function App() {
     }
   ]
 
+  const filteredTasks = tasks.filter((task) =>
+    task.title.includes('React')
+  )
+
+  const [searchText, setSearchText] = useState('');
+
   return (
     <>
-      {tasks.map((task) => (
+      <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
+      {filteredTasks.map((task) => (
         <TaskCard
           key={task.id}
           title={task.title}
-          description={task.description} 
+          description={task.description}
         />
       ))}
     </>
