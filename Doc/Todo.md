@@ -60,3 +60,8 @@ Aug 29
 5. [ ] apply jobs
 6. [ ] look for coach
 7. [ ] hair product 
+
+9.13
+1. [ ] finish day2
+2. [ ] finish day3
+3. [ ] appliy jobs new grad
