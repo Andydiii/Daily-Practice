@@ -53,9 +53,9 @@ Aug 29
 7. [ ] Todo App 入门 System Design：30 分钟
 
 9.11
-1. [ ] continue local setup
+1. [X] continue local setup
 2. [X] DD & git 
-3. [ ] finish day2
+3. [X] finish day2
 4. [ ] day3 half
 5. [ ] apply jobs
 6. [ ] look for coach

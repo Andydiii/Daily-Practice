@@ -50,6 +50,7 @@ function TaskCard(props: { title: string }) {}
 
 
 # export
+
 ## export default TaskCard vs export function TaskCard() { ... }
 ```jsx
 // With a named export, you can write:
@@ -90,4 +91,46 @@ import { TaskCard, TaskButton } from './TaskCard'
 export default TaskCard
 // file b
 import TaskCard from './TaskCard'
+```
+
+# State
+| 写法                        | 含义                              |
+| ------------------------- | ------------------------------- |
+| `useState(false)`         | 创建状态，初始值为 `false`，表示未展开         |
+| `expanded`                | 当前状态值，之后用它判断是否显示详情              |
+| `setExpanded`             | 更新这个状态的函数                       |
+| `[expanded, setExpanded]` | 从 `useState` 返回的数组中取出这两个值，叫数组解构 |
+```jsx
+import { useState } from 'react'
+const [expanded, setExpanded] = useState(false)
+```
+
+
+- onClick: tells React what to do when the button is clicked.
+- {...}: lets you put a JavaScript expression inside a JSX attribute.
+- () => setExpanded(true): a function that React will run when you click.
+- setExpanded(true): asks React to update the state and render the component again.
+```jsx
+<button onClick={() => setExpanded(true)}>
+  Show details
+</button>
+// This means: if expanded is true, display the paragraph; if it’s false, show nothing there.
+{expanded && <p>Practise this task for 20 minutes.</p>}
+```
+
+
+# render
+- You need key when rendering a list of elements, like when you use .map() to create several TaskCard components:
+```jsx
+return (
+    <>
+      {tasks.map((task) => (
+        <TaskCard
+          key={task.id}
+          title={task.title}
+          description={task.description} 
+        />
+      ))}
+    </>
+)
 ```

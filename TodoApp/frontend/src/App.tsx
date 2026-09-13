@@ -6,11 +6,33 @@ import TaskCard from './TaskCard'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const tasks = [
+    {
+      id: 1,
+      title: 'Learn React',
+      description: 'Practise props and state.'
+    },
+    {
+      id: 2,
+      title: 'Practice Java',
+      description: 'Solve one array problem.'
+    },
+    {
+      id: 3,
+      title: 'Practise SQL',
+      description: 'Review GROUP BY and HAVING.'
+    }
+  ]
 
   return (
     <>
-      <TaskCard title="practice java"/>
+      {tasks.map((task) => (
+        <TaskCard
+          key={task.id}
+          title={task.title}
+          description={task.description} 
+        />
+      ))}
     </>
   )
 }
