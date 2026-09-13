@@ -1,3 +1,5 @@
+jsx is like a languge that we can write html inside javascript.
+
 # props. 
 ## Example 1
 ```jsx

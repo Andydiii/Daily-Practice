@@ -23,16 +23,18 @@ function App() {
       description: 'Review GROUP BY and HAVING.'
     }
   ]
+  
+  const [searchText, setSearchText] = useState('');
 
   const filteredTasks = tasks.filter((task) =>
-    task.title.includes('React')
+    task.title.toLowerCase().includes(searchText.toLowerCase())
   )
-
-  const [searchText, setSearchText] = useState('');
 
   return (
     <>
       <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
+      <button onClick={() => setSearchText('')}>Clear</button>
+      {filteredTasks.length === 0 && <p>No matching tasks.</p>}
       {filteredTasks.map((task) => (
         <TaskCard
           key={task.id}
