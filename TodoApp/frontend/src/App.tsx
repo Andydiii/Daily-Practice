@@ -1,37 +1,49 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
 import TaskCard from './TaskCard'
 import './App.css'
 
+// the field names in Task must match field names returned in the JSON from backend.
+// the field names in props does not need to match the field names in APP nor the backend JSON response.
+type Task = {
+  id: number
+  title: string
+  completed: boolean
+}
+
 function App() {
-  const tasks = [
-    {
-      id: 1,
-      title: 'Learn React',
-      description: 'Practise props and state.'
-    },
-    {
-      id: 2,
-      title: 'Practice Java',
-      description: 'Solve one array problem.'
-    },
-    {
-      id: 3,
-      title: 'Practise SQL',
-      description: 'Review GROUP BY and HAVING.'
-    }
-  ]
-  
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
+
+  async function loadTasks() {
+    try {
+      // const means `response` cannot be updated.
+      // fetch returns a promise so we need to wait until the real response is ready before we move forward.
+      const response = await fetch("http://localhost:8080/tasks");
+
+      if (!response.ok) {
+        throw new Error("Failed to load tasks");
+      }
+
+      const data:Task[] = await response.json();
+      
+      setTasks(data);
+    } catch (error) {
+      console.error(error)
+    }
+  }
 
   const filteredTasks = tasks.filter((task) =>
     task.title.toLowerCase().includes(searchText.toLowerCase())
   )
 
+
+
+
   return (
     <>
+      <button onClick={loadTasks}>
+        Load Tasks
+      </button>
       <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
       <button onClick={() => setSearchText('')}>Clear</button>
       {filteredTasks.length === 0 && <p>No matching tasks.</p>}
@@ -39,7 +51,7 @@ function App() {
         <TaskCard
           key={task.id}
           title={task.title}
-          description={task.description}
+          completed={task.completed}
         />
       ))}
     </>

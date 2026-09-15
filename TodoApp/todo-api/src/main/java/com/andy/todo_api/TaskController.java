@@ -3,8 +3,10 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.GetMapping;
 import java.util.List;
 import java.util.ArrayList;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 // 告诉 Spring：这个 class负责接收 HTTP request并返回 response。
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 public class TaskController {
     @GetMapping("/tasks") // 收到 GET /hello 时，执行下面的 hello() 方法。

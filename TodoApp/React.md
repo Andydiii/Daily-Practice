@@ -181,3 +181,79 @@ const filteredTasks = tasks.filter((task) =>
   task.title.includes('React')
 )
 ```
+
+## const
+suppose we have `const [tasks, setTasks] = useState<Task[]>([])`
+const means we cannot do `tasks = newTasks // 错误：不能给 const 变量重新赋值` and we can only update the value by `setTasks(newTasks)`
+
+
+# IMPORTANT - async, await, fetch, consume backend API
+- `async` allows await and makes the function return a Promise. await pauses that function until the Promise settles(wait until returns a real Response); the rest of the page can keep running. 正常function执行到结尾时：普通函数没有 return → 返回 undefined。async 函数没有 return → 返回一个成功结果为 undefined 的 Promise。TypeScript 把这里的返回类型表示为 Promise<void>，意思是“异步操作完成后，不提供一个供调用者使用的返回值”。
+- `fetch()` always returns a Promise. Without waiting or using .then(), treating that Promise as a Response can cause an error. await fetch() gives us the Response object, and await response.json() gives us the parsed data. await pauses the async function, not the entire page. We use async + await to get the real Response before run the follwing code. We usually use async + await when there is a function return a promise. 
+- `fetch()` makes a HTTP request, default with GET request. after it finishes, the real response(including the status code, header, and JSON response body)
+- `response.ok`: see if status code is 200-299(successful status code), if yes then true, if not in the range it means failed and be false.
+- `response.json()`: reads and takes out the response body then parse the JSON into a JS object. e.g. the response body here is an array that contains objects(see JSON below). Then `const data = await response.json()` gives us a JS array containing task objects since `data` is type of `Task[]`. It only cares if the response body is JSON format, if not => error, it only parse the JSON into JS, and it does not detect the type/fields mismatch. even if there is a mismatch in the type/fiednames/number of fields, it does not care. its our responsibity to make sure they are matched. If `description` exist in `Task`  in frontend but does not exist in response body returned by backend, then when we read `data.description` it willl not give error but return `undefined` as result and TS wont fix it for us.
+```json
+[
+  {
+    "id": 1,
+    "title": "Task 1",
+    "completed": false
+  },
+  {
+    "id": 2,
+    "title": "Task 2 new",
+    "completed": false
+  }
+]
+```
+
+```ts
+async function loadTasks() {
+  // without using await, fetch returns a Promise not a Response JSON, we assumed we were using real Response JSON but actually we got a Promise and carried Promise forward. 
+  
+  // so In TypeScript, the editor flags response.ok: Property 'ok' does not exist on type 'Promise<Response>'.
+  // At JavaScript runtime, reading that missing property normally returns undefined;
+  // response.ok  is undefined => !undefined   // true
+  // Therefore, the if condition becomes true, and this line throws the error: throw new Error('Failed to load tasks')
+  // we use 
+  const response = await fetch('http://localhost:8080/tasks')
+
+  if (!response.ok) {
+    throw new Error('Failed to load tasks')
+  }
+
+  const data: Task[] = await response.json()
+  setTasks(data)
+}
+```
+
+# error handling
+如果没有 try/catch，错误会让 loadTasks() 提前结束，并让它返回的 Promise 变成 rejected（失败）。如果调用它的地方也没有处理这个失败，浏览器 Console 通常会显示： `Uncaught (in promise) ...`
+```ts
+async function loadTasks() {
+  const response = await fetch('http://localhost:8080/tasks')
+
+  if (!response.ok) {
+    throw new Error('Failed to load tasks')
+  }
+
+  const data = await response.json()
+  setTasks(data)
+}
+```
+
+假设后端返回 500： response.ok 是 false。 执行 throw new Error(...)。
+函数停止往下执行，不会运行 response.json() 和 setTasks(data)。
+没有人处理这个失败，用户可能只看到“点击按钮没有反应”。 catch 的作用，是让你决定失败后怎么办。 它不会修复网络或自动重试，但可以显示错误、保留数据、提供重试按钮。
+
+例如之后我们可以这样做：
+```ts
+catch (error) {
+  console.error(error)
+  setErrorMessage('Could not load tasks. Please try again.')
+}
+```
+这里假设我们已经定义了 errorMessage state：
+console.error(error)：给开发者查看具体错误。
+setErrorMessage(...)：更新页面状态，让用户看到提示。

@@ -66,11 +66,11 @@ try {
 # Java Data Structure
 
 ## Hashmap
-`import java.util.HashMap; `// Import the HashMap class
-`HashMap<String, String> capitalCities = new HashMap<>();`
-// Add keys and values (Country, City) `capitalCities.put("England", "London");`
-Access an Item: `capitalCities.get("England");`
-`capitalCities.remove("England");`
+Import the HashMap class: `import java.util.HashMap; ` 
+initilize a map: `HashMap<String, String> capitalCities = new HashMap<>();`
+Add keys and values (Country, City) `capitalCities.put("England", "London");`
+Access an Item/replace old with new value: `capitalCities.get("England");`
+remove item: `capitalCities.remove("England");`
 size: `capitalCities.size();`
 loop through a hashmap:
 ```java
@@ -82,8 +82,9 @@ for (String i : capitalCities.values()) {
   System.out.println(i);
 }
 ```
-get the value of the key(if there exists one) or return default value
-``
+get the value of the key(if there exists one) or return default value: `map.getOrDefault("Apple", 0);`
+check existence: `map.containsKey('Apple')`
+
 
 ## Stack(Last in first out)
 ```java
@@ -301,3 +302,22 @@ an HTTP response can’t send Java objects directly. They need to be converted i
 | `getTitle()`    | `"title"`     | Calling `getTitle()`    |
 | `isCompleted()` | `"completed"` | Calling `isCompleted()` |
 
+
+
+# Data sturcture type delcaration
+| Data structure | Primitive allowed? | Example                   |
+| -------------- | -----------------: | ------------------------- |
+| Array          |              ✅ Yes | `int[] nums`              |
+| `List<T>`      |               ❌ No | `List<Integer>`           |
+| `Set<T>`       |               ❌ No | `Set<Character>`          |
+| `Map<K,V>`     |               ❌ No | `Map<Character, Integer>` |
+
+- Common primitive → wrapper pairs:
+int     → Integer
+char    → Character
+double  → Double
+boolean → Boolean
+long    → Long
+float   → Float
+byte    → Byte
+short   → Short

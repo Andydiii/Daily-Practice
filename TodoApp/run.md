@@ -6,14 +6,14 @@ mvnw
 ```
 Maven需要从这里读取项目配置。
 但一个 Terminal session 中只需要 cd 一次：
-```
-cd "/Users/andyliu/Desktop/Daily-Practice/Java practice/todo-api"
-./mvnw spring-boot:run
-```
+
 backend:
+`cd "/Users/andyliu/Desktop/Daily-Practice/Java practice/todo-api"`
+`./mvnw spring-boot:run`
 http://localhost:8080/tasks
 
+
 frontend:
-npm.cmd install
-npm.cmd run dev
+`npm.cmd install`
+`npm.cmd run dev`
 http://localhost:5173/

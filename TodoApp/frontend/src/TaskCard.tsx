@@ -2,7 +2,7 @@ import { useState } from "react"
 
 type TaskCardProps = {
     title: string
-    description: string
+    completed: boolean
 }
 
 // props is the parameter name, TaskCardProps is TypeScript’s syntax to declare the parameter type
@@ -15,7 +15,7 @@ function TaskCard(props: TaskCardProps) {
                 {expanded? 'Hide Details' : 'Show Details'}
             </button>
             {/*This means: if expanded is true, display the paragraph; if it’s false, show nothing there.*/}
-            {expanded && <p>{props.description}</p>}
+            {expanded && <p>{props.completed? 'Completed': 'Pending'}</p>}
         </div>
     )
 }
