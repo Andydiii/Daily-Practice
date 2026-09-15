@@ -49,14 +49,43 @@ Aug 29
 3. [X] Spring Boot GET /tasks：90 分钟
 4. [X] review binary search
 5. [X] SQL HAVING 和聚合：45 分钟
-6. [ ] React/JavaScript 基础：45 分钟
+6. [X] React/JavaScript 基础：45 分钟
 7. [ ] Todo App 入门 System Design：30 分钟
 
 9.11
-1. [ ] continue local setup
+1. [X] continue local setup
 2. [X] DD & git 
-3. [ ] finish day2
+3. [X] finish day2
 4. [ ] day3 half
 5. [ ] apply jobs
 6. [ ] look for coach
 7. [ ] hair product 
+
+9.14
+1. [X] local setup and digest the session the project.
+2. [ ] finish day3 
+ - [X] Java / LeetCode — 60 min
+ - [ ] Valid Anagram: implementation reviewed, tests reported passed, complexity review completed.
+ - [ ] Full-stack project — 90 min
+    - [ ] Review latest App.tsx and TaskCard.tsx.
+    - [ ]Verify search, case-insensitive matching, no-results message, Clear button, and independent expand/collapse.
+    - [ ]Start connecting React to Spring Boot GET /tasks.
+ - [ ] 八股 — 30 min
+    - [ ] Java: == vs .equals().
+    - [ ] React: props vs state.
+    - [ ] Answer independently in English, then correct and repeat.
+ - [ ] SQL — 25 min
+    - [ ] Practise GROUP BY, COUNT, and HAVING.
+    - [ ] Check results and explain the query.
+ - [ ] System Design / OOD — 20 min
+    - [ ] Design the Todo table: fields, primary key, required values, defaults.
+- [ ] Behavioral — 15 min
+    - [ ] Explain a real debugging experience in English.
+    - [ ] Answer a follow-up question.
+- [ ] Testing / recap — 30 min
+    - [ ] Verify today’s changes.
+    - [ ] Review Git status and save relevant changes.
+    - [ ] Record blockers and the next step.
+- [ ] Applications / networking — final 30 min
+    - [ ] Apply to suitable roles or follow up.
+    - [ ] Record applications and outcomes.
