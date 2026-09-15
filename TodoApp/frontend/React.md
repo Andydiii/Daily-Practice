@@ -232,14 +232,25 @@ async function loadTasks() {
 如果没有 try/catch，错误会让 loadTasks() 提前结束，并让它返回的 Promise 变成 rejected（失败）。如果调用它的地方也没有处理这个失败，浏览器 Console 通常会显示： `Uncaught (in promise) ...`
 ```ts
 async function loadTasks() {
-  const response = await fetch('http://localhost:8080/tasks')
+  setLoading(true);
+  try {
+    // const means `response` cannot be updated.
+    // fetch returns a promise so we need to wait until the real response is ready before we move forward.
+    const response = await fetch("http://localhost:8080/tasks");
 
-  if (!response.ok) {
-    throw new Error('Failed to load tasks')
+    if (!response.ok) {
+      throw new Error("Failed to load tasks");
+    }
+
+    const data:Task[] = await response.json();
+    
+    setTasks(data);
+  } catch (error) {
+    console.error(error)
+  } finally {
+    // finally block will get run no matter try is suceesful or failed
+    setLoading(false)
   }
-
-  const data = await response.json()
-  setTasks(data)
 }
 ```
 

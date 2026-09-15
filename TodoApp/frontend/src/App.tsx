@@ -13,8 +13,12 @@ type Task = {
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   async function loadTasks() {
+    setErrorMessage('');
+    setLoading(true);
     try {
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
@@ -29,6 +33,10 @@ function App() {
       setTasks(data);
     } catch (error) {
       console.error(error)
+      setErrorMessage('Could not load tasks. Please try again.')
+    } finally {
+      // finally block will get run no matter try is suceesful or failed
+      setLoading(false)
     }
   }
 
@@ -41,9 +49,10 @@ function App() {
 
   return (
     <>
-      <button onClick={loadTasks}>
-        Load Tasks
+      <button onClick={loadTasks} disabled={loading}>
+        {loading ? 'Loading...' : 'Load Tasks'}
       </button>
+      {errorMessage && <p role='alert'>{errorMessage}</p>}
       <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
       <button onClick={() => setSearchText('')}>Clear</button>
       {filteredTasks.length === 0 && <p>No matching tasks.</p>}

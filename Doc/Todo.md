@@ -65,15 +65,15 @@ Aug 29
 1. [X] local setup and digest the session the project.
 2. [ ] finish day3 
  - [X] Java / LeetCode — 60 min
- - [ ] Valid Anagram: implementation reviewed, tests reported passed, complexity review completed.
- - [ ] Full-stack project — 90 min
-    - [ ] Review latest App.tsx and TaskCard.tsx.
-    - [ ]Verify search, case-insensitive matching, no-results message, Clear button, and independent expand/collapse.
-    - [ ]Start connecting React to Spring Boot GET /tasks.
- - [ ] 八股 — 30 min
-    - [ ] Java: == vs .equals().
-    - [ ] React: props vs state.
-    - [ ] Answer independently in English, then correct and repeat.
+    - [X] Valid Anagram: implementation reviewed, tests reported passed, complexity review completed.
+ - [X] Full-stack project — 90 min
+    - [X] Review latest App.tsx and TaskCard.tsx.
+    - [X]Verify search, case-insensitive matching, no-results message, Clear button, and independent expand/collapse.
+    - [X]Start connecting React to Spring Boot GET /tasks.
+ - [x] 八股 — 30 min
+    - [X] Java: == vs .equals().
+    - [X] React: props vs state.
+    - [X] Answer independently in English, then correct and repeat.
  - [ ] SQL — 25 min
     - [ ] Practise GROUP BY, COUNT, and HAVING.
     - [ ] Check results and explain the query.
@@ -89,3 +89,4 @@ Aug 29
 - [ ] Applications / networking — final 30 min
     - [ ] Apply to suitable roles or follow up.
     - [ ] Record applications and outcomes.
+3. interview tomorrow
