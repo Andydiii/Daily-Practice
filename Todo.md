@@ -74,11 +74,11 @@ Aug 29
     - [X] Java: == vs .equals().
     - [X] React: props vs state.
     - [X] Answer independently in English, then correct and repeat.
- - [ ] SQL — 25 min
-    - [ ] Practise GROUP BY, COUNT, and HAVING.
-    - [ ] Check results and explain the query.
- - [ ] System Design / OOD — 20 min
-    - [ ] Design the Todo table: fields, primary key, required values, defaults.
+ - [X] SQL — 25 min
+    - [X] Practise GROUP BY, COUNT, and HAVING.
+    - [X] Check results and explain the query.
+ - [X] System Design / OOD — 20 min
+    - [X] Design the Todo table: fields, primary key, required values, defaults.
 - [ ] Behavioral — 15 min
     - [ ] Explain a real debugging experience in English.
     - [ ] Answer a follow-up question.
