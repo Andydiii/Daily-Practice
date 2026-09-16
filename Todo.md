@@ -79,14 +79,14 @@ Aug 29
     - [X] Check results and explain the query.
  - [X] System Design / OOD — 20 min
     - [X] Design the Todo table: fields, primary key, required values, defaults.
-- [ ] Behavioral — 15 min
-    - [ ] Explain a real debugging experience in English.
-    - [ ] Answer a follow-up question.
-- [ ] Testing / recap — 30 min
-    - [ ] Verify today’s changes.
-    - [ ] Review Git status and save relevant changes.
-    - [ ] Record blockers and the next step.
-- [ ] Applications / networking — final 30 min
-    - [ ] Apply to suitable roles or follow up.
-    - [ ] Record applications and outcomes.
+- [X] Behavioral — 15 min
+    - [X] Explain a real debugging experience in English.
+    - [X] Answer a follow-up question.
+- [X] Testing / recap — 30 min
+    - [X] Verify today’s changes.
+    - [X] Review Git status and save relevant changes.
+    - [X] Record blockers and the next step.
+- [X] Applications / networking — final 30 min
+    - [X] Apply to suitable roles or follow up.
+    - [X] Record applications and outcomes.
 3. interview tomorrow
