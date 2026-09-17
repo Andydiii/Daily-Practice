@@ -124,12 +124,25 @@ import: `import java.util.Scanner;`
 Init scanner: `Scanner scanner = new Scanner(System.in);`
 Read a line from user: `String title = scanner.nextLine();`
 
-## string
-string comparison: `DO NOT use == but use str1.equals(str2)`
+## String
+**type**: must declare as `String` not `string`, there is no `string`
+**string comparison**: `DO NOT use == but use str1.equals(str2)`
 comapre with a char will alawys return false.
-convert to int: `parseInt(str)`
-length: `str.length()`
-access a index of string: `str.charAt(i)`
+**convert to int**: `Integer.parseInt(str)`
+**length**: `str.length()`
+**access a index of string**: `str.charAt(i)`
+**convert to lower case**: `.toLowerCase()`, time: O(n), space: result in an extra string of length n => O(n)
+**remove the nonalphanumeric**: `.reaplceAll("[^a-zA-Z0-9]", "")`, time: O(n), space: result in an extra string of length n => O(n)
+**double quotes vs single quotes**: `"a"` is a string of a, `'a'` is a char a
+**space**: a string of lengt n causes space of O(n) not O(1).
+**immutable & time complexity**: string is immutable in Java, and when we do `str += s.charAt(i)`, each iteration creates a new string and copies the existing string plus the new char. so it costs 1 + 2 + 3 + ... + n time = O(n^2). and each iteration create a new string so 1 + 1 + ... + 1 = O(n)
+```java
+str = ""
+for (int i = 0; i < s.length(); i++) {
+    str += s.charAt(i)
+}
+```
+
 
 
 # Encapsulation

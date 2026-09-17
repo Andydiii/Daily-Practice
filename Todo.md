@@ -63,7 +63,7 @@ Aug 29
 
 9.14
 1. [X] local setup and digest the session the project.
-2. [ ] finish day3 
+2. [X] finish day3 
  - [X] Java / LeetCode — 60 min
     - [X] Valid Anagram: implementation reviewed, tests reported passed, complexity review completed.
  - [X] Full-stack project — 90 min
@@ -90,3 +90,16 @@ Aug 29
     - [X] Apply to suitable roles or follow up.
     - [X] Record applications and outcomes.
 3. interview tomorrow
+
+
+9.16
+- [X] prepare for the netnel interview
+- [X] look at the task
+- [ ] Java algorithm — 60 min: Valid Palindrome: two pointers, Java implementation, tests, and complexity.
+- [ ] Full-stack project — 90 min: Start POST /tasks: retain tasks in backend memory, validate input, and test creating a task.
+- [ ] Interview fundamentals — 30 min: Review isBlank(), short-circuiting, HTTP requests, and React forms.
+- [ ] SQL — 25 min: Introduction to INNER JOIN, with a small exercise.
+- [ ] System Design — 20 min: In-memory storage versus database persistence.
+- [ ] Behavioral — 15 min: Explain a real debugging experience in English.
+- [ ] Testing / recap — 30 min: Check edge cases and review weak points.
+- [ ] Applications / networking — 30 min: Apply and follow up.
