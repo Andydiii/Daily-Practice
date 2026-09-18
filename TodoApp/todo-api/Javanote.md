@@ -1,5 +1,26 @@
 # OPP
-what is interface. what is the difference between interface and class.
+## field initializer vs create and fill the fied in constructor:
+```java
+// With a field initializer, the constructor only adds the starting tasks:
+private final List<Task> tasks = new ArrayList<>();
+
+public TaskController() {
+    tasks.add(new Task(1, "Task 1", false));
+    tasks.add(new Task(2, "Task 2", false));
+}
+
+// Or create and fill the list in the constructor:
+private final List<Task> tasks;
+
+public TaskController() {
+    tasks = new ArrayList<>();
+
+    tasks.add(new Task(1, "Task 1", false));
+    tasks.add(new Task(2, "Task 2", false));
+}
+```
+
+## what is interface. what is the difference between interface and class.
 In java, a class is something that can contain actual data and behavior. An interface is mainly a contract that says what behavior a class must provide. e.g.
 ```java
 public interface Animal {
@@ -291,7 +312,20 @@ src/main/java 告诉 Maven“Java 代码从这里开始”，package 只从它�
 
 
 # springboot
-## Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
+## Backend starts: Spring creates object for class registered as beans.
+`@RestController` tells Spring to register the class as a bean. When we start the springboot app(which is the backend), Spring creates the objects for all beans automatically. Thus all fields in the beans are initialzed as well.
+
+Other common annotations that register classes as beans include @Service, @Repository, and @Component. We’ll introduce those as the project grows.
+
+e.g. our TaskController:
+1. Spring finds TaskController through its annotation.
+2. Spring creates a TaskController object, which runs its constructor.
+3. Your constructor creates the list and the two sample Task objects.
+4. The controller is ready to handle requests.
+Later, clicking Load Tasks calls getTasks() on that existing controller.
+
+
+## GET: Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
 ```java
 @RestController
 public class TaskController {
@@ -304,6 +338,40 @@ public class TaskController {
         tasks.add(task2);
         return tasks;
     }
+}
+```
+
+## POST: 
+- @PostMapping("/tasks"): routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
+- @RequestBody: tells Spring to convert the incoming JSON body into a CreateTaskRequest object.
+- request: the parameter holding that object. You can read its title with request.getTitle().
+- Task: this method will return the newly created task.
+- title == null detects a missing title.
+- title.isBlank() detects "" or whitespace-only text.
+- || skips isBlank() when the title is null.
+- new ResponseStatusException(...) creates an exception carrying an HTTP status and a reason. Spring documentation
+- throw exits the normal method flow. Spring handles the exception and returns 400.
+```java
+// 收到 POST /tasks 时，执行下面的方法。
+// @requestbody converts the incoming request JSON body into CreateTaskRequest 
+@PostMapping("/tasks")
+public Task createTask(@RequestBody CreateTaskRequest request) {
+    String title = request.getTitle();
+    // == compares the refernce, does the title refer to NULL. 
+    // .equals() compare the content
+    if (title == null || title.isBlank()) {
+        throw new ResponseStatusException(
+            // status code 400
+            HttpStatus.BAD_REQUEST,
+            // reason for the exception
+            "Title must not be blank"
+        );
+    }
+
+    Task newTask = new Task(nextId, title, false);
+    tasks.add(newTask);
+    nextId++;
+    return newTask;
 }
 ```
 
