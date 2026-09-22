@@ -325,7 +325,14 @@ e.g. our TaskController:
 Later, clicking Load Tasks calls getTasks() on that existing controller.
 
 
-## GET: Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
+## HTTP request handle:
+### Status code:
+`201 Created`
+`200 OK`
+`400 Bad Request`
+
+### GET: 
+when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
 ```java
 @RestController
 public class TaskController {
@@ -341,20 +348,30 @@ public class TaskController {
 }
 ```
 
-## POST: 
-- @PostMapping("/tasks"): routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
-- @RequestBody: tells Spring to convert the incoming JSON body into a CreateTaskRequest object.
-- request: the parameter holding that object. You can read its title with request.getTitle().
+an HTTP response can’t send Java objects directly. They need to be converted into a format such as JSON. That conversion is called serialization. The getter’s name determines the JSON property name; its return value determines the JSON value.
+
+| Getter          | JSON field    | Value comes from        |
+| --------------- | ------------- | ----------------------- |
+| `getId()`       | `"id"`        | Calling `getId()`       |
+| `getTitle()`    | `"title"`     | Calling `getTitle()`    |
+| `isCompleted()` | `"completed"` | Calling `isCompleted()` |
+
+### POST: 
+- `@PostMapping("/tasks")`: routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
+- `@RequestBody`: tells Spring to convert the incoming JSON body into a `CreateTaskRequest` object. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
+- request: the parameter holding that object. You can read its title with `request.getTitle()`.
 - Task: this method will return the newly created task.
 - title == null detects a missing title.
 - title.isBlank() detects "" or whitespace-only text.
 - || skips isBlank() when the title is null.
-- new ResponseStatusException(...) creates an exception carrying an HTTP status and a reason. Spring documentation
+- new `ResponseStatusException(...)` creates an exception carrying an `HTTP status` and a `reason`.
 - throw exits the normal method flow. Spring handles the exception and returns 400.
+- `@ResponseStatus(HttpStatus.CREATED)`: Without adding this, if the method completes successfully, backend will send status code `200 ok`. Adding this line will send HTTP status `201 created` when method completes sucessfully.
 ```java
 // 收到 POST /tasks 时，执行下面的方法。
 // @requestbody converts the incoming request JSON body into CreateTaskRequest 
 @PostMapping("/tasks")
+@ResponseStatus(HttpStatus.CREATED) // Adding this line will send HTTP status `201 created` when method completes sucessfully.
 public Task createTask(@RequestBody CreateTaskRequest request) {
     String title = request.getTitle();
     // == compares the refernce, does the title refer to NULL. 
@@ -374,14 +391,6 @@ public Task createTask(@RequestBody CreateTaskRequest request) {
     return newTask;
 }
 ```
-
-## an HTTP response can’t send Java objects directly. They need to be converted into a format such as JSON. That conversion is called serialization. The getter’s name determines the JSON property name; its return value determines the JSON value.
-
-| Getter          | JSON field    | Value comes from        |
-| --------------- | ------------- | ----------------------- |
-| `getId()`       | `"id"`        | Calling `getId()`       |
-| `getTitle()`    | `"title"`     | Calling `getTitle()`    |
-| `isCompleted()` | `"completed"` | Calling `isCompleted()` |
 
 ## CROS problem: CORS(Cross-Origin Resource Sharing) error when loading tasks 
 While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully, then tested error handling by stopping the backend and confirming that loading worked again after restarting it.

@@ -39,3 +39,18 @@ async function loadTasks() {
 }
 ```
 this is unreliable because even if you are allowed to update the tasks, it wont trigger re-render and thus commits the necessary changes to DOM, thus the page wont change at all. with state, the page will be dynamic and be re-rendered based on the value of the most updated tasks
+
+- Q5: Why must the backend still validate the title? Give an example of how a request could bypass frontend validation.
+because we may use postman to test the HTTP request e.g. POST http://localhost:8080/tasks which bypass the frontend validation.
+
+- Q6: Why do we check title == null first? What could happen if we reversed the conditions?
+if we check `title.isBlank()` first then there is an error if title is null.
+
+- Q7: Your API returns 201 Created when it creates a task and 400 Bad Request when the title is invalid. Why is returning 200 OK for both outcomes less useful to the frontend?
+since we dont know which request is it. it might be GET request returned 200 OK or post request succesfully created a new task so 200 OK, which does not give too much details about the return status
+
+- Q5: When we build the React “Create Task” form, should we clear the title input before sending the POST request, or only after the backend confirms the task was created successfully?
+we should only clear the input after the backend confirms the success. Imagine we enter "practice SQL" and click Create.
+  - Success: the backend creates the task. React adds it to the displayed list and clears the input, ready for another task.
+  - failure: the backend failed to create the task and return failture status code, then react shows error and keeps the title "practice sql" in the input so we can retry without typing it again.
+

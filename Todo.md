@@ -96,9 +96,9 @@ Aug 29
 - [X] prepare for the netnel interview
 - [X] look at the task
 - [X] Java algorithm — 60 min: Valid Palindrome: two pointers, Java implementation, tests, and complexity.
-- [ ] Full-stack project — 90 min: Start POST /tasks: retain tasks in backend memory, validate input, and test creating a task.
-- [ ] Interview fundamentals — 30 min: Review isBlank(), short-circuiting, HTTP requests, and React forms.
-- [ ] SQL — 25 min: Introduction to INNER JOIN, with a small exercise.
+- [x] Full-stack project — 90 min: Start POST /tasks: retain tasks in backend memory, validate input, and test creating a task.
+- [X] Interview fundamentals — 30 min: Review isBlank(), short-circuiting, HTTP requests, and React forms.
+- [X] SQL — 25 min: Introduction to INNER JOIN, with a small exercise.
 - [ ] System Design — 20 min: In-memory storage versus database persistence.
 - [ ] Behavioral — 15 min: Explain a real debugging experience in English.
 - [ ] Testing / recap — 30 min: Check edge cases and review weak points.

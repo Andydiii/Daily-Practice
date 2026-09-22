@@ -53,6 +53,16 @@ Add Task Flow:
     - if save successful, SpringBoot return JSON with created new Task to React and status code `201 created` and do step 4
 4. React receives the returned new Task JSON, then update the tasks state to inlcude the new task, then rerender the component and commit the necessary changes to DOM elements.
 
+## If you create three new tasks and then restart Spring Boot, what will GET /tasks return? Why?
+when we create 3 new tasks by `POST /tasks`, there are 5 tasks intotal in the tasks. If we were to restart the spring boot, the tasks stored in memory are lost, and constructor gets called again to inilialize the `tasks` to add the 2 initial tasks. So now `Get /Tasks` only returns two tasks(Task 1 and Task 2) inilized in the constructor. 
+
+## We want newly created tasks to remain available after restarting the backend. Where should we store them instead of relying only on the ArrayList?
+We should store them in the DB so we dont lost them when backend restarts.
+
+## Suppose the backend tries to save a new task, but the database write fails. Should it return 201 Created? What should React do with the title the user entered?
+
+No. it should return a failed status code to frontend and react should display an error and keep the title so user could retry creating a new task.
+
 # Design Todo Database Tabel
 
 **We want to store tasks in a database. Each task has an id, a title, and a completed status. Which field would you choose as the primary key, and why would you choose it instead of title?** \

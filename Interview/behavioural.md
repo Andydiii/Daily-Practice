@@ -1,5 +1,5 @@
-**Tell me about a time you debugged a problem between a frontend and a backend. How did you identify the cause and verify your fix?**
-While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully, then tested error handling by stopping the backend and confirming that loading worked again after restarting it.
+# Tell me about a time you debugged a problem between a frontend and a backend. How did you identify the cause and verify your fix?
+While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to the bacckend controller to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully.
 
 An origin consists of protocol + hostname + port. Your frontend (http://localhost:5173) and backend (http://localhost:8080) have different ports, so they are different origins.
 

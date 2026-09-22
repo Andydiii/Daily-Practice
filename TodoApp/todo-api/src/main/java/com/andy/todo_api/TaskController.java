@@ -4,6 +4,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -44,6 +45,7 @@ public class TaskController {
     // 收到 POST /tasks 时，执行下面的方法。
     // @requestbody converts the incoming request JSON body into CreateTaskRequest 
     @PostMapping("/tasks")
+    @ResponseStatus(HttpStatus.CREATED) // Adding this line tells Spring to send HTTP status `201 created` when method completes sucessfully.
     public Task createTask(@RequestBody CreateTaskRequest request) {
         String title = request.getTitle();
         // == compares the refernce, does the title refer to NULL. 
