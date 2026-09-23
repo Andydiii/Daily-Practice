@@ -1,5 +1,26 @@
 # OPP
-what is interface. what is the difference between interface and class.
+## field initializer vs create and fill the fied in constructor:
+```java
+// With a field initializer, the constructor only adds the starting tasks:
+private final List<Task> tasks = new ArrayList<>();
+
+public TaskController() {
+    tasks.add(new Task(1, "Task 1", false));
+    tasks.add(new Task(2, "Task 2", false));
+}
+
+// Or create and fill the list in the constructor:
+private final List<Task> tasks;
+
+public TaskController() {
+    tasks = new ArrayList<>();
+
+    tasks.add(new Task(1, "Task 1", false));
+    tasks.add(new Task(2, "Task 2", false));
+}
+```
+
+## what is interface. what is the difference between interface and class.
 In java, a class is something that can contain actual data and behavior. An interface is mainly a contract that says what behavior a class must provide. e.g.
 ```java
 public interface Animal {
@@ -124,12 +145,25 @@ import: `import java.util.Scanner;`
 Init scanner: `Scanner scanner = new Scanner(System.in);`
 Read a line from user: `String title = scanner.nextLine();`
 
-## string
-string comparison: `DO NOT use == but use str1.equals(str2)`
+## String
+**type**: must declare as `String` not `string`, there is no `string`
+**string comparison**: `DO NOT use == but use str1.equals(str2)`
 comapre with a char will alawys return false.
-convert to int: `parseInt(str)`
-length: `str.length()`
-access a index of string: `str.charAt(i)`
+**convert to int**: `Integer.parseInt(str)`
+**length**: `str.length()`
+**access a index of string**: `str.charAt(i)`
+**convert to lower case**: `.toLowerCase()`, time: O(n), space: result in an extra string of length n => O(n)
+**remove the nonalphanumeric**: `.reaplceAll("[^a-zA-Z0-9]", "")`, time: O(n), space: result in an extra string of length n => O(n)
+**double quotes vs single quotes**: `"a"` is a string of a, `'a'` is a char a
+**space**: a string of lengt n causes space of O(n) not O(1).
+**immutable & time complexity**: string is immutable in Java, and when we do `str += s.charAt(i)`, each iteration creates a new string and copies the existing string plus the new char. so it costs 1 + 2 + 3 + ... + n time = O(n^2). and each iteration create a new string so 1 + 1 + ... + 1 = O(n)
+```java
+str = ""
+for (int i = 0; i < s.length(); i++) {
+    str += s.charAt(i)
+}
+```
+
 
 
 # Encapsulation
@@ -278,7 +312,27 @@ src/main/java 告诉 Maven“Java 代码从这里开始”，package 只从它�
 
 
 # springboot
-Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
+## Backend starts: Spring creates object for class registered as beans.
+`@RestController` tells Spring to register the class as a bean. When we start the springboot app(which is the backend), Spring creates the objects for all beans automatically. Thus all fields in the beans are initialzed as well.
+
+Other common annotations that register classes as beans include @Service, @Repository, and @Component. We’ll introduce those as the project grows.
+
+e.g. our TaskController:
+1. Spring finds TaskController through its annotation.
+2. Spring creates a TaskController object, which runs its constructor.
+3. Your constructor creates the list and the two sample Task objects.
+4. The controller is ready to handle requests.
+Later, clicking Load Tasks calls getTasks() on that existing controller.
+
+
+## HTTP request handle:
+### Status code:
+`201 Created`
+`200 OK`
+`400 Bad Request`
+
+### GET: 
+when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
 ```java
 @RestController
 public class TaskController {
@@ -302,7 +356,78 @@ an HTTP response can’t send Java objects directly. They need to be converted i
 | `getTitle()`    | `"title"`     | Calling `getTitle()`    |
 | `isCompleted()` | `"completed"` | Calling `isCompleted()` |
 
+### POST: 
+- `@PostMapping("/tasks")`: routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
+- `@RequestBody`: tells Spring to convert the incoming JSON body into a `CreateTaskRequest` object. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
+- request: the parameter holding that object. You can read its title with `request.getTitle()`.
+- Task: this method will return the newly created task.
+- title == null detects a missing title.
+- title.isBlank() detects "" or whitespace-only text.
+- || skips isBlank() when the title is null.
+- new `ResponseStatusException(...)` creates an exception carrying an `HTTP status` and a `reason`.
+- throw exits the normal method flow. Spring handles the exception and returns 400.
+- `@ResponseStatus(HttpStatus.CREATED)`: Without adding this, if the method completes successfully, backend will send status code `200 ok`. Adding this line will send HTTP status `201 created` when method completes sucessfully.
+```java
+// 收到 POST /tasks 时，执行下面的方法。
+// @requestbody converts the incoming request JSON body into CreateTaskRequest 
+@PostMapping("/tasks")
+@ResponseStatus(HttpStatus.CREATED) // Adding this line will send HTTP status `201 created` when method completes sucessfully.
+public Task createTask(@RequestBody CreateTaskRequest request) {
+    String title = request.getTitle();
+    // == compares the refernce, does the title refer to NULL. 
+    // .equals() compare the content
+    if (title == null || title.isBlank()) {
+        throw new ResponseStatusException(
+            // status code 400
+            HttpStatus.BAD_REQUEST,
+            // reason for the exception
+            "Title must not be blank"
+        );
+    }
 
+    Task newTask = new Task(nextId, title, false);
+    tasks.add(newTask);
+    nextId++;
+    return newTask;
+}
+```
+
+## CROS problem: CORS(Cross-Origin Resource Sharing) error when loading tasks 
+While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully, then tested error handling by stopping the backend and confirming that loading worked again after restarting it.
+
+An origin consists of protocol + hostname + port. Your frontend (http://localhost:5173) and backend (http://localhost:8080) have different ports, so they are different origins.
+
+the backend returned the tasks, but its response was missing Access-Control-Allow-Origin. Therefore, the browser blocked your React code from reading the response.
+
+**Why add @CrossOrigin? `@CrossOrigin(origins = "http://localhost:5173")`**
+
+by adding `@CrossOrigin(origins = "http://localhost:5173")` to backend springboot, springboot will add the CORS header to response header automatically then the browser wont block the react app to read the response.
+
+You could write backend code to set response headers manually, but Spring’s CORS support handles that work for you.
+
+**Why can’t React add the permission header?**
+
+Because permission must come from the server sharing the data. A frontend cannot grant itself permission to read another origin’s response. Adding Access-Control-Allow-Origin to your fetch request would not solve this.
+
+**Is browser here same as react app? react app, browser, backend are 3 different things ?**
+
+Yes—React app, browser, and backend are three different things, but the React app runs inside the browser.
+
+| Part          | What it is                                                                                        | In your project                  |
+| ------------- | ------------------------------------------------------------------------------------------------- | -------------------------------- |
+| **Browser**   | A program that loads pages, runs JavaScript, displays the UI, and enforces browser security rules | Edge                             |
+| **React app** | Your frontend JavaScript code running inside the browser                                          | `App`, `TaskCard`, `loadTasks()` |
+| **Backend**   | A separate program that receives HTTP requests and returns responses                              | Spring Boot on port `8080`       |
+
+When you click Load Tasks:
+
+Your React code calls `fetch()`.
+The browser handles the network request.
+Spring Boot receives it and sends a response.
+The browser checks CORS before making the response available to your React code.
+Your React code reads the JSON and calls setTasks(data).
+
+So the browser can receive the backend response but refuse to let the React app read it. That explains why you saw both 200 OK and a CORS error.
 
 # Data sturcture type delcaration
 | Data structure | Primitive allowed? | Example                   |

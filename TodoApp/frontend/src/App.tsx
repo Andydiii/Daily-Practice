@@ -13,8 +13,17 @@ type Task = {
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
+  
+  // disable load button when its loading tasks. track the get request
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [title, setTitle] = useState('');
+  // disable add button when adding a new task. track the post request
+  const [creating, setCreating] = useState(false);
 
   async function loadTasks() {
+    setErrorMessage('');
+    setLoading(true);
     try {
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
@@ -24,11 +33,15 @@ function App() {
         throw new Error("Failed to load tasks");
       }
 
-      const data:Task[] = await response.json();
-      
+      const data: Task[] = await response.json();
+
       setTasks(data);
     } catch (error) {
       console.error(error)
+      setErrorMessage('Could not load tasks. Please try again.')
+    } finally {
+      // finally block will get run no matter try is suceesful or failed
+      setLoading(false)
     }
   }
 
@@ -37,13 +50,58 @@ function App() {
   )
 
 
+  async function createTask() {
+    setErrorMessage('');
+
+    if (title.trim() === '') {
+      setErrorMessage('Please enter a valid task title');
+      return;
+    }
+
+    setCreating(true);
+
+    try {
+      const response = await fetch('http://localhost:8080/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }, 
+        body: JSON.stringify({title: title.trim()}) // convert js object into a JSON 
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to create task");
+      }
+
+      const newTask: Task = await response.json();
+      setTasks((oldTasks) => {return [...oldTasks, newTask]});
+      setTitle('');
+    } catch (error) {
+      console.error(error);
+      setErrorMessage("Could not create task. Please try again");
+    } finally {
+      setCreating(false);
+    }
+  }
 
 
   return (
     <>
-      <button onClick={loadTasks}>
-        Load Tasks
+      <label htmlFor="task-title">New Task Title</label>
+      <input
+        id="task-title"
+        type="text"
+        placeholder='Enter a task title'
+        value={title}
+        onChange={(event) => {setTitle(event.target.value)}}
+      />
+      <button type='button' onClick={createTask} disabled={creating}>
+        {creating ? 'Creating...' : 'Add a Task'}
       </button>
+      <button onClick={loadTasks} disabled={loading}>
+        {loading ? 'Loading...' : 'Load Tasks'}
+      </button>
+      {errorMessage && <p role='alert'>{errorMessage}</p>}
       <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
       <button onClick={() => setSearchText('')}>Clear</button>
       {filteredTasks.length === 0 && <p>No matching tasks.</p>}
