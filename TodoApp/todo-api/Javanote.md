@@ -1,4 +1,15 @@
 # OPP
+## run a java fiel
+```java
+// compile first 
+javac twoPointer.java
+javac .\twoPointer.java
+
+// run the compiled file
+java twoPointer
+```
+
+
 ## field initializer vs create and fill the fied in constructor:
 ```java
 // With a field initializer, the constructor only adds the starting tasks:
