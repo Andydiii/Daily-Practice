@@ -1,5 +1,9 @@
 jsx is like a languge that we can write html inside javascript.
 
+# HTML
+- Label + Input combo: used alot in form.
+![](20260922163854.png)
+
 # props. 
 ## Example 1
 ```jsx
@@ -186,8 +190,49 @@ const filteredTasks = tasks.filter((task) =>
 suppose we have `const [tasks, setTasks] = useState<Task[]>([])`
 const means we cannot do `tasks = newTasks // 错误：不能给 const 变量重新赋值` and we can only update the value by `setTasks(newTasks)`
 
+## spread syntax
+- `[` and `]` create a new array.
+- `[...previousTasks, newTask]` tells React: “Take the previous tasks, create a new array containing them plus the new task, and use that as the next state.” */
+- `...previousTasks` inserts the existing elements individually.
+- `newTask` adds one more element at the end.
+
+```ts
+const previousTasks = ['Task 1', 'Task 2'];
+const newTask = 'Task 3';
+
+const updatedTasks = [...previousTasks, newTask];
+
+// Result:
+// ['Task 1', 'Task 2', 'Task 3']
+```
+
+- Without the ..., you would put the entire old array inside the new array:
+
+```ts
+[previousTasks, newTask]
+
+// Result:
+// [['Task 1', 'Task 2'], 'Task 3']
+```
+
+- That is a nested array, which isn’t what our task list needs.
+
+```js
+// Finally, the arrow function 
+previousTasks => [...previousTasks, newTask]
+
+// is a shorter way to write:
+(previousTasks) => {
+  return [...previousTasks, newTask];
+}
+```
+
+
+
+
 
 # IMPORTANT - async, await, fetch, consume backend API
+## LoadTask Example
 - `async` allows await and makes the function return a Promise. await pauses that function until the Promise settles(wait until returns a real Response); the rest of the page can keep running. 正常function执行到结尾时：普通函数没有 return → 返回 undefined。async 函数没有 return → 返回一个成功结果为 undefined 的 Promise。TypeScript 把这里的返回类型表示为 Promise<void>，意思是“异步操作完成后，不提供一个供调用者使用的返回值”。
 - `fetch()` always returns a Promise. Without waiting or using .then(), treating that Promise as a Response can cause an error. await fetch() gives us the Response object, and await response.json() gives us the parsed data. await pauses the async function, not the entire page. We use async + await to get the real Response before run the follwing code. We usually use async + await when there is a function return a promise. 
 - `fetch()` makes a HTTP request, default with GET request. after it finishes, the real response(including the status code, header, and JSON response body)
@@ -227,6 +272,68 @@ async function loadTasks() {
   setTasks(data)
 }
 ```
+
+## Create Task exmaple(fetch with parameters)
+- `fetch(url, options)` has two arguments, **`url`**: where to send the request. **`options`**: a JavaScript object describing how to send it. This argument is optional.
+
+| Property | Value in your code | Value type |
+| --- |  --- |  --- |
+| `method` | `'POST'` | String |
+| --- |  --- |  --- |
+| `headers` | `{ 'Content-Type': 'application/json' }` | Object |
+| `body` | Result of `JSON.stringify(...)` | String |
+
+Here, the header name is `'Content-Type'`, and its value is `'application/json'`. The name needs quotes because it contains a hyphen.
+
+```ts
+  try {
+      const response = fetch('http://localhost:8080/tasks', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+```
+Now compare `body`:
+
+```js
+body: JSON.stringify({ title: title.trim() })
+```
+
+There are two steps:
+
+```js
+// A JavaScript object:
+{ title: 'Learn SQL' }
+
+// JSON.stringify converts it into a string:
+'{"title":"Learn SQL"}'
+```
+
+**The body is the actual content you want to send.** It could contain JSON, plain text, or a file,
+
+we want the value in the body to be text in JSON format, i.e. a string that in json format, then we need `stringify`, otherwise the value is still js object and `fetch` doesn't automatically convert an ordinary JavaScript object into JSON. You explicitly do that:
+
+You could separate the pieces to make this clearer:
+
+```js
+const taskData= { title: title.trim() };
+
+constoptions= {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(taskData)
+};
+
+const response=awaitfetch('http://localhost:8080/tasks', options);
+```
+
+This sends the same request as your original code.
+
+
 
 # error handling
 如果没有 try/catch，错误会让 loadTasks() 提前结束，并让它返回的 Promise 变成 rejected（失败）。如果调用它的地方也没有处理这个失败，浏览器 Console 通常会显示： `Uncaught (in promise) ...`
@@ -268,3 +375,20 @@ catch (error) {
 这里假设我们已经定义了 errorMessage state：
 console.error(error)：给开发者查看具体错误。
 setErrorMessage(...)：更新页面状态，让用户看到提示。
+
+## does this catch only catch the throw we wrote? 
+No—catch handles errors thrown inside its try block, including rejected Promises that you await.
+In your code, it can handle:
+| What happens                    | How the error reaches `catch`                        |
+| ------------------------------- | ---------------------------------------------------- |
+| Backend is unreachable          | `fetch()` rejects; `await` throws that error         |
+| Backend returns `400` or `500`  | Your `if (!response.ok)` explicitly throws           |
+| Response body is not valid JSON | `response.json()` rejects; `await` throws that error |
+
+## why await throws the error instead of fetch or response.json() ?
+Because fetch() and response.json() return Promises. If their asynchronous work fails, their Promise becomes rejected.
+
+await connects that rejection to your normal try/catch flow:
+
+If the Promise fulfills, await gives you its result.
+If the Promise rejects, await throws its rejection reason at that line.
