@@ -49,8 +49,29 @@ if we check `title.isBlank()` first then there is an error if title is null.
 - Q7: Your API returns 201 Created when it creates a task and 400 Bad Request when the title is invalid. Why is returning 200 OK for both outcomes less useful to the frontend?
 since we dont know which request is it. it might be GET request returned 200 OK or post request succesfully created a new task so 200 OK, which does not give too much details about the return status
 
-- Q5: When we build the React “Create Task” form, should we clear the title input before sending the POST request, or only after the backend confirms the task was created successfully?
+- Q8: When we build the React “Create Task” form, should we clear the title input before sending the POST request, or only after the backend confirms the task was created successfully?
 we should only clear the input after the backend confirms the success. Imagine we enter "practice SQL" and click Create.
   - Success: the backend creates the task. React adds it to the displayed list and clears the input, ready for another task.
   - failure: the backend failed to create the task and return failture status code, then react shows error and keeps the title "practice sql" in the input so we can retry without typing it again.
 
+- Q9: In your React code, why do we create a new array here? `setTasks(previousTasks => [...previousTasks, newTask]);` Why shouldn’t we simply write `tasks.push(newTask)` and then `setTasks(tasks);`?
+
+If we directly do `tasks.push(newTask)` and then `setTasks(tasks);`, although the array is mutated, when we do `setTasks(tasks);`, current state and the new state are the same, so react think the state is unchanged and thus skiped render.
+
+Instead, if we do `setTasks(previousTasks => [...previousTasks, newTask]);`, then old elements in the old array will be put in new array plus the newly created task. React found that the old/new state values are different, then rerender the component with the updated state value, and then commit the necessary changes to DOM.
+
+- Q10: why is setCreating(false) in finally, while setTitle('') runs only after the POST succeeds?
+it is because we want setCreating(false) no matter the new task is created successfully or not. 
+and we only want setTitle('') when the request is successful, and keep the title when failure for retry.
+
+- Q11: For your POST request, what does each of these do?
+In particular, does setting Content-Type convert the JavaScript object into JSON? 
+```js
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ title: title.trim() })
+```
+header option is to contain request metadata, such as the body’s format.
+`Content-Type: application/json` tells Spring how to interpret the body
+body option in the POST is to specify what content we wanna send to backend. In this case, we wanna send a JSON format text, so we used `JSON.stringify` to convert the js object into a text in json format.
+
+No setting Content-type does not convert js object into JSON. It only tells us that the request body will be in JSON format. but `JSON.stringify` converts the js object into json format.
