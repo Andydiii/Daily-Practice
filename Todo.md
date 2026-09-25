@@ -105,9 +105,19 @@ Aug 29
 
 9.23
 - [X] Full-stack: Create Task flow
-- [ ] Algorithm: two-pointer practice
-- [ ] Interview fundamentals
-- [ ] SQL: `LEFT JOIN`
-- [ ] System design: controller/service/repository
-- [ ] Behavioral practice
-- [ ] Optional: recap and applications/networking
+- [X] Algorithm: two-pointer practice
+- [X] Interview fundamentals
+- [X] SQL: `LEFT JOIN`
+- [X] System design: controller/service/repository
+- [X] Behavioral practice
+- [X] Optional: recap and applications/networking
+
+9.24
+- [X] Todo app — mark a task complete: pass its ID from App to TaskCard, add the backend update endpoint, then update React state after a successful response.
+- [ ] Database: set up persistent storage, move GET, POST, and complete-task off the controller’s list, then verify a task survives a backend restart.
+- [ ] Java algorithm: move all zeros in an array to the end while keeping the other numbers in order.
+- [ ] SQL: practise a LEFT JOIN with rows that have no match.
+- [ ] Fundamentals: explain how an HTTP update request reaches the right task and what happens on failure.
+- [ ] System design: trace the update through controller, service, and repository.
+- [ ] Interview practice: give a short explanation of a decision you made in the Todo app.
+- [ ] Applications: a 30-minute block for suitable entry-level roles.

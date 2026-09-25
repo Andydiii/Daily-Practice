@@ -127,7 +127,8 @@ const [expanded, setExpanded] = useState(false)
 
 ## Render - IMPORTANT
 - state and render: we defined the state `searchText` in App component, so whenever the state is updated, 
-1. rerender: the component App() will be rerender(rerun/recalculation to get the new jsx that describes the UI, this step wont modify any actual DOM elements(real UI) ). 
+0. decide whether to render: React compares the old and proposed state values. if the new state = old state, then react treat the state unchanged and skip the render.
+1. rerender: the component App() will be rerender (rerun/recalculation to get the new jsx that describes the UI, this step wont modify any actual DOM elements(real UI) ). 
 2. commit: compare the previous render and next render find the difference, commit the necessary changes to actual DOM.
 3. Browser displays the result: the browser draws the page using the DOM and styles.
 

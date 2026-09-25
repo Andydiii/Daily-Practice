@@ -21,6 +21,8 @@ public TaskController() {
 ```
 
 ## what is interface. what is the difference between interface and class.
+- **Interface**: says which operations/functions are available.
+- **Implementation class**: contains the code that performs them.
 In java, a class is something that can contain actual data and behavior. An interface is mainly a contract that says what behavior a class must provide. e.g.
 ```java
 public interface Animal {
@@ -30,24 +32,31 @@ public interface Animal {
 This says: any class cliam be to an `Animal` must have a `makeSound()` method.
 
 
-# public/private static/non-static method:
-**public/private**: who can call me? \
+# public/private/protected,  static/non-static method, final:
+**public/private/protected**: who can call me? 
 **static/non-static:** who does the method belong to? Does the method belong to the class or object?
 
 private method: can only be called inside the class
 
 public method: so the method can be called outside the class. so other methods in other class can also call public method.
 
+protected method: code inside same class e.g. `Task`, other classes in the same package e.g. `com.andy.todo_api`, and subclasses can call it.
+
 normal method: has to create the object first before call the method. e.g. has to create a object twosum first and then twosum.main()
 
 static method: no need to create a object first before call the method. for exmaple. we can do TwoSum.main() without creating TwoSum object.
+
+**final**:
+`private final TaskRepository taskRepository;`: final means the field must be assigned once and cannot be assigned a different repository later. We assign it in the constructor: `this.taskRepository = taskRepository;`. After that, this would be a compile error: `this.taskRepository = anotherRepository;`
 
 # Compile/run java program
 example if we were to run TodoApp.java
 ```js
 javac TodoApp.java // this compiles TodoApp.java then we got TodoApp.class 
+javac ./TodoApp.java 
 java TodoApp // this runs the main function in the class TodoApp.
 ```
+
 # Exception handling
 第一种写法：用最细节的exception最稳妥
 ```java
@@ -429,6 +438,37 @@ Your React code reads the JSON and calls setTasks(data).
 
 So the browser can receive the backend response but refuse to let the React app read it. That explains why you saw both 200 OK and a CORS error.
 
+## PUT request(including path variables)
+- these two methods both works.
+```java
+// way 1: only one var
+@PutMapping("/tasks/{id}/complete")
+public Task completeTask(@PathVariable("id") int id) {
+    // ...
+}
+
+// way 1: multiple vars
+@GetMapping("/tasks/{taskId}/comments/{commentId}")
+public Comment getComment(
+    @PathVariable int taskId,
+    @PathVariable int commentId
+) {
+    // ...
+}
+
+// way 2 
+// For /tasks/2/comments/8, taskId is 2 and commentId is 8.
+@GetMapping("/tasks/{taskId}/comments/{commentId}")
+public Comment getComment(
+    @PathVariable("taskId") int taskId,
+    @PathVariable("commentId") int commentId
+) {
+    // ...
+}
+```
+
+
+
 # Data sturcture type delcaration
 | Data structure | Primitive allowed? | Example                   |
 | -------------- | -----------------: | ------------------------- |
@@ -446,3 +486,129 @@ long    → Long
 float   → Float
 byte    → Byte
 short   → Short
+
+# Set up Repository & DB 
+1. A dependency is a library Maven downloads for your Java project. We add two dependencies into `pom.xml` because they do different jobs:
+**Spring Data JPA**: `spring-boot-starter-data-jpa` helps your code work with stored tasks. Later, Then code such as repository.save(task) can save a task without us writing the basic SQL ourselves. Spring Data JPA provides that programming interface.
+**PostgreSQL JDBC driver**: `org.postgresql:postgresql` lets Java communicate with PostgreSQL. It is the JDBC driver: the software that sends database commands to the PostgreSQL server and receives results. JPA needs a driver for the particular database we chose. 
+`Your controller → repository/JPA → PostgreSQL driver → todo_app database`
+
+2. added three folowing properties to `TodoApp/todo-api/src/main/resources/application.properties`:
+**url**: connect to PostgreSQL on your computer (`localhost`), using port `5432`, and select the `todo_app` database.
+**username**: sign in as the PostgreSQL user `postgres`.
+**password**: `${DB_PASSWORD}` tells Spring Boot to get the password from a setting outside this file. That way, your password doesn’t go into a file you might commit to Git. Spring Boot supports this placeholder syntax.
+```
+spring.datasource.url=jdbc:postgresql://localhost:5432/todo_app
+spring.datasource.username=postgres
+spring.datasource.password=${DB_PASSWORD}
+```
+
+3. Add this line `spring.jpa.hibernate.ddl-auto=update` to `TodoApp/todo-api/src/main/resources/application.properties`:
+`ddl-auto` controls what Hibernate does to the database structure when the backend starts. For this local practice app, update tells it to create a missing table or add missing columns based on your entity.
+
+## change to Task.java
+```java
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id
+
+@Entity
+public class Task {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    //...
+
+    protected Task() {}
+}
+```
+- `@Entity` tells JPA that Task can be stored as a row in a database table.
+- `@Id` marks id as the row’s unique identifier.
+- `@GeneratedValue(strategy = GenerationType.IDENTITY)` says the database will generate IDs when we start saving tasks through the repository. Your current controller still supplies IDs for its in-memory list; we’ll remove that later. For example, later our code will create a task with a title but without choosing an ID. When we save it, PostgreSQL generates the ID, and the returned task can include that ID
+- `@GeneratedValue` is an annotation on the id field. It tells JPA: “When saving a new Task, generate its ID instead of requiring my code to choose one.”
+- `strategy` = names the annotation setting we’re choosing. In Java annotation syntax, it means “set the strategy option to this value.”
+- `protected Task() {}` is an empty constructor JPA needs when it builds a Task from a database row. We keep your existing constructor so the current controller still compiles
+- `GenerationType` is the type that lists the available ID generation strategies.
+- `IDENTITY` is the strategy we chose: let the database generate the ID when it inserts the row. JPA can then put the generated ID back into the saved Task
+
+
+## TaskRepository.java
+`public interface TaskRepository extends JpaRepository<Task, Integer> {}`
+- `JpaRepository` is an interface supplied by `Spring Data JPA`. It describes database operations such as `save`, `findAll`, and `findById`.
+- `TaskRepository` is your interface. It says, “I want those operations for my Task objects.”
+- `Implementation`: There still needs to be an implementation: a class with code that performs those operations. Spring Data creates that implementation when your app starts, so you don’t have to write it yourself. When Spring Boot starts, `Spring Data` creates an implementation for `TaskRepository` that your controller can use.
+- `extends`: Because both sides are interfaces, it means TaskRepository inherits the operations declared by JpaRepository. TaskRepository inherits the method declarations from JpaRepository. So a TaskRepository has operations such as save(...) and findById(...) available. The braces can be empty because you don’t need any additional operations yet.
+- `JpaRepository<Task, Integer>`: JpaRepository has two type parameters. 
+    **First**: the entity(a row in the table. we specified in Task.java) you store, such as Task. 
+    **Second**: the Java type of the field marked `@Id`, such as Integer for your Task’s int id. JpaRepository is written for many kinds of data. Those two types tell it which kind you use:
+    ```md
+    JpaRepository<Task, Integer>
+              │     │
+              │     └─ type of Task's id
+              └─────── type of object being stored
+    ```
+    or example, Spring then understands save(...) takes a Task, while findById(...) takes a task ID. We write Integer because Java generics use object types; int has the corresponding object type Integer.
+
+- Why need this file?:  It gives your controller a TaskRepository it can call. Later, instead of searching your Java list, the controller can call:  `repository.findById(id);` Spring Data handles that database operation and returns the matching task if one exists. Creating the file alone won’t move data: we still need to change the controller to call the repository.
+
+## TaskController.java
+
+### Constructor & repository
+when we run java spring boot app, the beans(e.g. controllers) gets created and initilized automatically. When it creates TaskController Spring supplies the TaskRepository argument(the real implementation) . `this.taskRepository = taskRepository` saves that supplied object in the controller’s field.
+```java
+public TaskController(TaskRepository taskRepository) {
+    this.taskRepository = taskRepository;
+
+    this.tasks = new ArrayList<Task>();
+    tasks.add(new Task(1, "Task 1", false));
+    tasks.add(new Task(2, "Task 2", false));
+}
+```
+
+### GET request using findAll()
+`findAll()` reads the task rows from PostgreSQL. Your database table is currently empty, so GET will return [] until we update POST to save tasks there. Spring Data supplies the repository method
+```java
+@GetMapping("/tasks")
+public List<Task> getTasks() {
+    return taskRepository.findAll();
+}
+```
+
+
+### POST request using
+`save(newTask)` stores it in the database and returns the saved Task with its generated ID. Your existing @ResponseStatus(HttpStatus.CREATED) still makes a successful POST return 201 Created.
+```java
+Task newTask = new Task(title, false);
+return taskRepository.save(newTask);
+```
+
+### PUT request using findById(), orElseThrow()
+`orElseThrow`: needs a function that creates exception.
+`() -> {}`: is a lambda function but java uses `->` as arrow (js uses `=>`), `()` means it taks no arguments.
+`findById(id)`: looks for the task in PostgreSQL.
+`save(target)`: writes that change to PostgreSQL and returns the updated task.
+```java
+@PutMapping("/tasks/{id}/complete")
+public Task markCompleted(@PathVariable int id) {
+    
+    Task target = taskRepository.findById(id).orElseThrow(() -> { 
+        return new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find the task");
+    });
+
+    target.setCompleted();
+    return taskRepository.save(target);
+}
+```
+
+### When does .save() update the exisiting task VS create a new task into DB?
+- `save()` looks at the Task’s ID to choose a path. With your current int id and no version field, the simplified logic is:
+- `save(new Task("Learn SQL", false))` starts with ID 0 and takes the create path. save(target) receives the task you already loaded with findById(id), so it has an ID and takes the update path. Internally, Spring Data JPA uses persist() for a new entity and merge() for one it considers existing
+
+```java
+if (task.getId() == 0) {
+    // New task: insert it
+} else {
+    // Existing task: merge its changes
+}
+```

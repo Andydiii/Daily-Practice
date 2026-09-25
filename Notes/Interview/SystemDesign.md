@@ -63,6 +63,12 @@ We should store them in the DB so we dont lost them when backend restarts.
 
 No. it should return a failed status code to frontend and react should display an error and keep the title so user could retry creating a new task.
 
+## When we later store Todo tasks in a database, we might split the backend into a controller, service, and repository. For POST /tasks, what do you think each one should do?
+Controller: receives the HTTP request and sends the HTTP response.
+Service: applies the app’s rules, such as rejecting a blank title and creating the task.
+Repository: saves the task to the database.
+Your current TaskController does all three jobs itself. That works for practice; splitting it up will make more sense as we add a database.
+
 # Design Todo Database Tabel
 
 **We want to store tasks in a database. Each task has an id, a title, and a completed status. Which field would you choose as the primary key, and why would you choose it instead of title?** \
@@ -94,5 +100,8 @@ frontend sends HTTP POST request with body includes the title only to backend. b
 | `id`        | Primary key: unique and non-null                    |
 | `title`     | Non-null; also reject empty or whitespace-only text |
 | `completed` | Non-null, defaults to `false`                       |
+
+
+ 
 
 

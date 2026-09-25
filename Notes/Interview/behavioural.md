@@ -34,3 +34,7 @@ The browser checks CORS before making the response available to your React code.
 Your React code reads the JSON and calls setTasks(data).
 
 So the browser can receive the backend response but refuse to let the React app read it. That explains why you saw both 200 OK and a CORS error.
+
+# Tell me about a technical decision you made while building your Todo app. What did you choose, and why?
+I chose to validate task titles in both React and Spring Boot. React gives users immediate feedback before sending a request. Spring Boot checks again because clients such as Postman can call the API directly and bypass React. That way, the backend rejects blank titles regardless of where the request came from.
+
