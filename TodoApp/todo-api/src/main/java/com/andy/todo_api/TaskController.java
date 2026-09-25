@@ -2,7 +2,9 @@ package com.andy.todo_api;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
@@ -25,17 +27,22 @@ Restarting the backend would lose its contents.
 @CrossOrigin(origins = "http://localhost:5173") 
 @RestController
 public class TaskController {
+    // similar to List<...> lst = new arrayList<>(); List is an interface and we will assign a implementation to it.
+    private final TaskRepository taskRepository;
+    
     // when backend starts, the controllers are beans thus gets created automatically by Spring, the field is initialized when startup.
     private List<Task> tasks;
     private int nextId = 3;
 
-    @GetMapping("/tasks") // 收到 GET /tasks 时，执行下面的 hello() 方法。
+    // 收到 GET /tasks 时，执行下面的 hello() 方法。
+    @GetMapping("/tasks") 
     public List<Task> getTasks() {
-        return tasks;
+        return taskRepository.findAll();
     }
 
     // to be a constructor, there should not be a return type.
-    public TaskController() {
+    public TaskController(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
         this.tasks = new ArrayList<Task>();
         tasks.add(new Task(1, "Task 1", false));
         tasks.add(new Task(2, "Task 2", false));
@@ -60,10 +67,23 @@ public class TaskController {
             );
         }
 
-        Task newTask = new Task(nextId, title, false);
-        tasks.add(newTask);
-        nextId++;
-        return newTask;
+        Task newTask = new Task(title, false);
+        return taskRepository.save(newTask);
+    }
+
+    
+    // 收到 PUT /tasks/{id}/complete 时，执行下面的方法
+    // {id} is the number in the URL; @PathVariable int id gives that number to the method.
+    @PutMapping("/tasks/{id}/complete")
+    public Task markCompleted(@PathVariable int id) {
+        // orElseThrow needs a function that creates exception
+        // () means it taks no arguments
+        Task target = taskRepository.findById(id).orElseThrow(() -> { 
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find the task");
+        });
+
+        target.setCompleted();
+        return taskRepository.save(target);
     }
 }
 

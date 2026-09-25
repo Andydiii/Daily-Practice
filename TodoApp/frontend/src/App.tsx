@@ -20,6 +20,8 @@ function App() {
   const [title, setTitle] = useState('');
   // disable add button when adding a new task. track the post request
   const [creating, setCreating] = useState(false);
+  // disable complete button when completing a task
+  const [completing, setCompleting] = useState(false);
 
   async function loadTasks() {
     setErrorMessage('');
@@ -84,6 +86,26 @@ function App() {
     }
   }
 
+  async function handleComplete(id: number) {
+    setCompleting(true);
+    try {
+      const response = await fetch(
+        `http://localhost:8080/tasks/${id}/complete`, 
+        {method: 'PUT'}
+      );
+      if (!response.ok) {
+        throw new Error("Failed to complete the task");
+      }
+      const updatedTask: Task = await response.json();
+      setTasks(tasks.map((task) => {
+        return task.id === id ? updatedTask : task;
+      }));
+    } catch (error) {
+      setErrorMessage("Could not update the task, please try again");
+    } finally {
+      setCompleting(false);
+    }
+  }
 
   return (
     <>
@@ -108,8 +130,11 @@ function App() {
       {filteredTasks.map((task) => (
         <TaskCard
           key={task.id}
+          id={task.id}
           title={task.title}
           completed={task.completed}
+          onComplete={handleComplete}
+          completing={completing}
         />
       ))}
     </>
