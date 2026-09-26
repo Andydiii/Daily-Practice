@@ -146,7 +146,7 @@ remove element at a specific index: `tasks.remove(i);` (this will return the del
 ## Array
 Create a new array: 
 `String[] cars = new String[] {"Volvo", "BMW", "Ford", "Mazda"};`
-// Shortcut (most common) String[] cars = {"Volvo", "BMW", "Ford", "Mazda"}; \
+// Shortcut (most common) `String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};` \
 length: `array.length`;
 
 ## Scanner
@@ -339,6 +339,7 @@ Later, clicking Load Tasks calls getTasks() on that existing controller.
 `201 Created`
 `200 OK`
 `400 Bad Request`
+`404 Not Found`
 
 ### GET: 
 when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
