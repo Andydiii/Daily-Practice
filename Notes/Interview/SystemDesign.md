@@ -101,7 +101,11 @@ frontend sends HTTP POST request with body includes the title only to backend. b
 | `title`     | Non-null; also reject empty or whitespace-only text |
 | `completed` | Non-null, defaults to `false`                       |
 
+**two users send POST /tasks at the same time. Why is letting PostgreSQL generate each task’s ID safer than keeping a nextId counter in TaskController?**
+PostgreSQL handles the concurrent inserts and give each one a distinct id. It does not need to finish one request before the other request. 
 
- 
+with nextid in controller, concurrent inserts may could lead to reading the same nextId before either increments and thus two tasks with same id occured.
+
+
 
 
