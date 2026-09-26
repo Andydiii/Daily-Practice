@@ -146,7 +146,7 @@ remove element at a specific index: `tasks.remove(i);` (this will return the del
 ## Array
 Create a new array: 
 `String[] cars = new String[] {"Volvo", "BMW", "Ford", "Mazda"};`
-// Shortcut (most common) String[] cars = {"Volvo", "BMW", "Ford", "Mazda"}; \
+// Shortcut (most common) `String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};` \
 length: `array.length`;
 
 ## Scanner
