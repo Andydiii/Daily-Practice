@@ -76,10 +76,10 @@ body option in the POST is to specify what content we wanna send to backend. In 
 
 No setting Content-type does not convert js object into JSON. It only tells us that the request body will be in JSON format. but `JSON.stringify` converts the js object into json format.
 
-- Q12: Why does findById(id) return an Optional<Task> instead of a Task? What does orElseThrow(...) do when the ID doesn’t exist?
+- Q12: Why does `findById(id)` return an Optional<Task> instead of a Task? What does `orElseThrow(...)` do when the ID doesn’t exist?
 ```java
 taskRepository.findById(id)
     .orElseThrow(() -> new ResponseStatusException(
         HttpStatus.NOT_FOUND, "Cannot find the task"));
 ```
-A: becuase it may not find any Task has that id, so return `Optional.empty()` when it finds no task. Thus orElseThrow() comes to deal with the returning nothing case. In that case(didnt find a task with this id), throw a status code `404 Not Found` with the reason "Cannot find the task".
+A: becuase it may not find any Task has that id, so return `Optional<Task>` when it finds task, and a `Optional.empty()` when finds no Task. `orElseThrow()` returns the Task when present; otherwise it throws `ResponseStatusException` with status code `404 Not Found` and the reason "Cannot find the task".
