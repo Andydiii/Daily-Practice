@@ -95,6 +95,22 @@ try {
 
 # Java Data Structure
 
+## Set
+```java
+Set<Integer> numbers = new HashSet<>();
+numbers.add(3);       // true: 3 was added
+numbers.add(3);       // false: 3 was already there
+numbers.contains(3);  // true
+numbers.remove(3);    // true: 3 was removed
+numbers.size();       // 0
+numbers.isEmpty();    // true
+```
+| Operation | Java method | Result |
+|---|---|---|
+| Union | `a.addAll(b)` | Elements in either set |
+| Intersection | `a.retainAll(b)` | Elements in both sets |
+| Difference | `a.removeAll(b)` | Elements in `a` but not `b` |
+
 ## Hashmap
 Import the HashMap class: `import java.util.HashMap; ` 
 initilize a map: `HashMap<String, String> capitalCities = new HashMap<>();`
