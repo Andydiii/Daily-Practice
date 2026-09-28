@@ -13,6 +13,7 @@ import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 /*
 Our current controller list has two limitations:
@@ -84,6 +85,16 @@ public class TaskController {
 
         target.setCompleted();
         return taskRepository.save(target);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTask(@PathVariable int id) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find the task");
+        });
+        // when we reach here, we found the task
+        taskRepository.delete(task);
     }
 }
 
