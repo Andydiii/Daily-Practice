@@ -6,6 +6,7 @@ type TaskCardProps = {
     completed: boolean
     onComplete: (id: number) => void
     completing: boolean
+    onDelete: (id: number) => void
 }
 
 // props is the parameter name, TaskCardProps is TypeScript’s syntax to declare the parameter type
@@ -26,6 +27,11 @@ function TaskCard(props: TaskCardProps) {
                 disabled={props.completed || props.completing}
             >
                 {props.completed ? 'Completed' : 'Complete'}
+            </button>
+            <button
+                onClick={() => {props.onDelete(props.id)}}
+            >
+                Delete
             </button>
         </>
     )

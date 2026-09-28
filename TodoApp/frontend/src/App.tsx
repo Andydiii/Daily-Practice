@@ -13,7 +13,7 @@ type Task = {
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
-  
+
   // disable load button when its loading tasks. track the get request
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -67,8 +67,8 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }, 
-        body: JSON.stringify({title: title.trim()}) // convert js object into a JSON 
+        },
+        body: JSON.stringify({ title: title.trim() }) // convert js object into a JSON 
       });
 
       if (!response.ok) {
@@ -76,7 +76,7 @@ function App() {
       }
 
       const newTask: Task = await response.json();
-      setTasks((oldTasks) => {return [...oldTasks, newTask]});
+      setTasks((oldTasks) => { return [...oldTasks, newTask] });
       setTitle('');
     } catch (error) {
       console.error(error);
@@ -90,8 +90,8 @@ function App() {
     setCompleting(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/tasks/${id}/complete`, 
-        {method: 'PUT'}
+        `http://localhost:8080/tasks/${id}/complete`,
+        { method: 'PUT' }
       );
       if (!response.ok) {
         throw new Error("Failed to complete the task");
@@ -107,6 +107,22 @@ function App() {
     }
   }
 
+  async function handleDelete(id: number) {
+    try {
+      const response = await fetch(`http://localhost:8080/tasks/${id}`, {
+        method: "DELETE"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete the task");
+      }
+      setTasks(tasks.filter((task) => {
+        return task.id != id;
+      }))
+    } catch (error) {
+      setErrorMessage("Failed to delete the task")
+    }
+  }
+
   return (
     <>
       <label htmlFor="task-title">New Task Title</label>
@@ -115,7 +131,7 @@ function App() {
         type="text"
         placeholder='Enter a task title'
         value={title}
-        onChange={(event) => {setTitle(event.target.value)}}
+        onChange={(event) => { setTitle(event.target.value) }}
       />
       <button type='button' onClick={createTask} disabled={creating}>
         {creating ? 'Creating...' : 'Add a Task'}
@@ -135,6 +151,7 @@ function App() {
           completed={task.completed}
           onComplete={handleComplete}
           completing={completing}
+          onDelete={handleDelete}
         />
       ))}
     </>

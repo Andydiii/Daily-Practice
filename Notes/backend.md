@@ -340,6 +340,7 @@ Later, clicking Load Tasks calls getTasks() on that existing controller.
 `200 OK`
 `400 Bad Request`
 `404 Not Found`
+`204 No Content`
 
 ### GET: 
 when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
@@ -606,6 +607,7 @@ public Task markCompleted(@PathVariable int id) {
 ```
 
 ### Delete(deleteById and delete):
+- `@ResponseStatus(HttpStatus.NO_CONTENT)` returns `204 No Content` when successful
 - way one to delete from repository: `deleteById()`;
 ```java
 @Service
