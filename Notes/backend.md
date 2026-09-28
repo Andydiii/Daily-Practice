@@ -605,6 +605,32 @@ public Task markCompleted(@PathVariable int id) {
 }
 ```
 
+### Delete(deleteById and delete):
+- way one to delete from repository: `deleteById()`;
+```java
+@Service
+public class ProductService {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    public void deleteProduct(Long id) {
+        // Optional check to ensure it exists before trying to delete
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id); //
+        }
+    }
+}
+```
+
+- delete By Entity Object: `delete()`
+```java
+public void deleteProduct(Product product) {
+    productRepository.delete(product); 
+}
+```
+
+
 ### When does .save() update the exisiting task VS create a new task into DB?
 - `save()` looks at the Task’s ID to choose a path. With your current int id and no version field, the simplified logic is:
 - `save(new Task("Learn SQL", false))` starts with ID 0 and takes the create path. save(target) receives the task you already loaded with findById(id), so it has an ID and takes the update path. Internally, Spring Data JPA uses persist() for a new entity and merge() for one it considers existing
