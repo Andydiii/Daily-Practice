@@ -117,7 +117,16 @@ Aug 29
 - [X] Database: set up persistent storage, move GET, POST, and complete-task off the controller’s list, then verify a task survives a backend restart.
 - [X] Java algorithm: move all zeros in an array to the end while keeping the other numbers in order.
 - [X] SQL: practise a LEFT JOIN with rows that have no match.
-- [ ] Fundamentals: explain how an HTTP update request reaches the right task and what happens on failure.
-- [ ] System design: trace the update through controller, service, and repository.
-- [ ] Interview practice: give a short explanation of a decision you made in the Todo app.
-- [ ] Applications: a 30-minute block for suitable entry-level roles. 
+- [X] Fundamentals: explain how an HTTP update request reaches the right task and what happens on failure.
+- [X] System design: trace the update through controller, service, and repository.
+- [X] Interview practice: give a short explanation of a decision you made in the Todo app.
+- [X] Applications: a 30-minute block for suitable entry-level roles. 
+
+- [ ] Spring Boot: Add DELETE /tasks/{id} and test 204 for success and 404 for a missing ID.
+- [ ] React: Add a Delete button that calls the API and removes the task from state after success.
+- [ ] Java algorithm: Solve LeetCode 26 — Remove Duplicates from Sorted Array in place.
+- [ ] SQL: Solve LeetCode 577 — Employee Bonus to practise LEFT JOIN and NULL.
+- [ ] Backend fundamentals: Explain how the API handles a failed database operation.
+- [ ] System design: Decide how tasks would belong to individual users instead of being shared.
+- [ ] Behavioral practice: One short interview answer; you can skip it again.
+- [ ] Applications: One focused 20–30 minute application block.
