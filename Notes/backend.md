@@ -585,7 +585,10 @@ return taskRepository.save(newTask);
 ```
 
 ### PUT request using findById(), orElseThrow()
-`orElseThrow`: needs a function that creates exception.
+`orElseThrow`: needs a function that creates exception. 
+    - Task found: `orElseThrow(...)` gives you that Task, assigns it to task, and execution reaches `taskRepository.delete(task)`.
+    - Task missing: `orElseThrow(...)` throws the exception, so the delete line is never reached.
+    - the expression after -> implicitly returns the new exception object to orElseThrow. Then orElseThrow throws it. You don’t write return or throw inside this short lambda.
 `() -> {}`: is a lambda function but java uses `->` as arrow (js uses `=>`), `()` means it taks no arguments.
 `findById(id)`: looks for the task in PostgreSQL.
 `save(target)`: writes that change to PostgreSQL and returns the updated task.
