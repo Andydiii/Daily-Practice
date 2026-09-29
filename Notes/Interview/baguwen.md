@@ -83,3 +83,14 @@ taskRepository.findById(id)
         HttpStatus.NOT_FOUND, "Cannot find the task"));
 ```
 A: becuase it may not find any Task has that id, so return `Optional<Task>` when it finds task, and a `Optional.empty()` when finds no Task. `orElseThrow()` returns the Task when present; otherwise it throws `ResponseStatusException` with status code `404 Not Found` and the reason "Cannot find the task".
+
+- Q13: backend failure handling. Suppose POST /tasks passes title validation, but PostgreSQL is unavailable when taskRepository.save(newTask) runs.
+1. The HTTP response?
+2. The task list shown in React?
+3. The title still in the input box?
+
+A:
+1. a database down usually produce `500 internal server error`. save() throws before the controller returns. Spring Boot handles the uncaught error by default
+2. The tasks will be unchanged. same as if the request has not been made.
+3. title should still be kept since user may wanna retry.
+

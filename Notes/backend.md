@@ -352,11 +352,16 @@ Later, clicking Load Tasks calls getTasks() on that existing controller.
 
 ## HTTP request handle:
 ### Status code:
+- code `2xx` means successful request:
+`200 OK` - general/standard/default status code for all successful request
 `201 Created`
-`200 OK`
-`400 Bad Request`
-`404 Not Found`
-`204 No Content`
+`204 No Content` - request was successful, but no data sent back in the response body (common after deleting an item).
+- code `4xx` means client-side issue:
+`400 Bad Request` - The server cannot process the request because of malformed syntax or a client-side error.
+`404 Not Found` - The server cannot find the requested URL or resource.
+- code `5xx` means the website's server encountered an error and could not fulfill a valid request from the client
+`500 internal server error` - The server hit a generic, unexpected problem and cannot be more specific.
+`503 Service Unavailable`: The server is temporarily down for maintenance or overloaded with too much traffic.
 
 ### GET: 
 when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.

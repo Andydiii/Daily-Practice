@@ -126,8 +126,8 @@ Aug 29
 - [X] Spring Boot: Add DELETE /tasks/{id} and test 204 for success and 404 for a missing ID.
 - [X] React: Add a Delete button that calls the API and removes the task from state after success.
 - [X] Java algorithm: Solve LeetCode 26 — Remove Duplicates from Sorted Array in place.
-- [ ] SQL: Solve LeetCode 577 — Employee Bonus to practise LEFT JOIN and NULL.
-- [ ] Backend fundamentals: Explain how the API handles a failed database operation.
-- [ ] System design: Decide how tasks would belong to individual users instead of being shared.
-- [ ] Behavioral practice: One short interview answer; you can skip it again.
-- [ ] Applications: One focused 20–30 minute application block.
+- [X] SQL: Solve LeetCode 577 — Employee Bonus to practise LEFT JOIN and NULL.
+- [X] Backend fundamentals: Explain how the API handles a failed database operation.
+- [X] System design: Decide how tasks would belong to individual users instead of being shared.
+- [X] Behavioral practice: One short interview answer; you can skip it again.
+- [X] Applications: One focused 20–30 minute application block.
