@@ -131,3 +131,13 @@ Aug 29
 - [X] System design: Decide how tasks would belong to individual users instead of being shared.
 - [X] Behavioral practice: One short interview answer; you can skip it again.
 - [X] Applications: One focused 20–30 minute application block.
+
+9.29
+- [X] Spring Boot: Add an endpoint to edit a task’s title. Validate blank titles and return 404 for a missing task.
+- [ ] React: Add an Edit button and update the displayed task after a successful request.
+- [ ] Java algorithm: Solve LeetCode 27, Remove Element, using two pointers.
+- [ ] SQL: Solve LeetCode 183, Customers Who Never Order.
+- [ ] Backend fundamentals: Explain why an API might use a request DTO instead of accepting a Task entity directly.
+- [ ] System design: Decide how task ownership should be checked for edit and delete requests.
+- [ ] Behavioral interview: Practice a project story other than the CORS example.
+- [ ] Applications: Spend 30 minutes on relevant new-grad roles.

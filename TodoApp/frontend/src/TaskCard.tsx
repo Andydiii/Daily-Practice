@@ -7,15 +7,43 @@ type TaskCardProps = {
     onComplete: (id: number) => void
     completing: boolean
     onDelete: (id: number) => void
+    onEdit: (id: number, title: string) => void
 }
 
 // props is the parameter name, TaskCardProps is TypeScript’s syntax to declare the parameter type
 function TaskCard(props: TaskCardProps) {
     const [expanded, setExpanded] = useState(false);
+    const [editing, setEditing] = useState(false);
+    const [draftTitle, setDraftTitle] = useState(props.title);
+
+    function startEditing() {
+        setEditing(true);
+    }
+
+    function cancelEditing() {
+        setDraftTitle(props.title);
+        setEditing(false);
+    }
+
     return (
         <>
             <div>
-                <h2>{props.title}</h2>
+                {editing ? (
+                    <>
+                        <label htmlFor="newTitle">New Title</label>
+                        <input type="text" id="newTitle" value={draftTitle} onChange={(event) => {setDraftTitle(event.target.value)}}/>
+                        <button onClick={() => {
+                            props.onEdit(props.id, draftTitle);
+                            setEditing(false);
+                        }}>save</button>
+                        <button onClick={cancelEditing}>cancel</button>
+                    </>
+                ) : (
+                    <>
+                        <h2>{props.title}</h2>
+                        <button type="button" onClick={startEditing}>Edit</button>
+                    </>
+                )}
                 <button onClick={() => setExpanded(!expanded)}>
                     {expanded ? 'Hide Details' : 'Show Details'}
                 </button>

@@ -123,6 +123,29 @@ function App() {
     }
   }
 
+  async function handleEdit(id: number, title: string) {
+    try {
+      const response = await fetch(`http://localhost:8080/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title.trim()
+        })
+      });
+      if (!response.ok) {
+        throw new Error("Failed to edit the task");
+      }
+      const updatedTask = await response.json();
+      setTasks(tasks.map((task) => {
+        return task.id == id ? updatedTask : task;
+      }));
+    } catch (error) {
+      setErrorMessage("Failed to edit the task");
+    }
+  }
+
   return (
     <>
       <label htmlFor="task-title">New Task Title</label>
@@ -152,6 +175,7 @@ function App() {
           onComplete={handleComplete}
           completing={completing}
           onDelete={handleDelete}
+          onEdit={handleEdit}
         />
       ))}
     </>

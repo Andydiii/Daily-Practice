@@ -20,6 +20,8 @@ public TaskController() {
 }
 ```
 
+## 
+
 ## what is interface. what is the difference between interface and class.
 - **Interface**: says which operations/functions are available.
 - **Implementation class**: contains the code that performs them.
@@ -30,7 +32,6 @@ public interface Animal {
 }
 ```
 This says: any class cliam be to an `Animal` must have a `makeSound()` method.
-
 
 # public/private/protected,  static/non-static method, final:
 **public/private/protected**: who can call me? 
@@ -390,11 +391,11 @@ an HTTP response can’t send Java objects directly. They need to be converted i
 
 ### POST: 
 - `@PostMapping("/tasks")`: routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
-- `@RequestBody`: tells Spring to convert the incoming JSON body into a `CreateTaskRequest` object. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
+- `@RequestBody`: tells Spring to use its JSON converter to convert the incoming JSON body into a `CreateTaskRequest` object. JSON converter creates an `CreateTaskRequest` object and uses `CreateTaskReqeust.setTitle()` to put the incoming value there. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
 - request: the parameter holding that object. You can read its title with `request.getTitle()`.
 - Task: this method will return the newly created task.
 - title == null detects a missing title.
-- title.isBlank() detects "" or whitespace-only text.
+- `title.isBlank()` detects "" or whitespace-only text.
 - || skips isBlank() when the title is null.
 - new `ResponseStatusException(...)` creates an exception carrying an `HTTP status` and a `reason`.
 - throw exits the normal method flow. Spring handles the exception and returns 400.
@@ -510,7 +511,7 @@ float   → Float
 byte    → Byte
 short   → Short
 
-# Set up Repository & DB 
+# Set up Repository & DB & springboot backend after repository
 1. A dependency is a library Maven downloads for your Java project. We add two dependencies into `pom.xml` because they do different jobs:
 **Spring Data JPA**: `spring-boot-starter-data-jpa` helps your code work with stored tasks. Later, Then code such as repository.save(task) can save a task without us writing the basic SQL ourselves. Spring Data JPA provides that programming interface.
 **PostgreSQL JDBC driver**: `org.postgresql:postgresql` lets Java communicate with PostgreSQL. It is the JDBC driver: the software that sends database commands to the PostgreSQL server and receives results. JPA needs a driver for the particular database we chose. 
@@ -626,6 +627,16 @@ public Task markCompleted(@PathVariable int id) {
     return taskRepository.save(target);
 }
 ```
+
+### Patch vs PUT
+`PATCH` means change part of an existing resource. `PUT` means create or replace the state of the resource at that URL
+```java
+// For a task that currently looks like this:
+{"id": 3, "title": "Learn SQL", "completed": false}
+```
+PATCH /tasks/3 with {"title":"Practice SQL"} means change the title and leave completed as false.
+PUT /tasks/3 would normally provide the task’s complete new state, including its title and completion status.
+current existing PUT /tasks/{id}/complete is a dedicated action endpoint that you already built;
 
 ### Delete(deleteById and delete):
 - `@ResponseStatus(HttpStatus.NO_CONTENT)` returns `204 No Content` when successful
