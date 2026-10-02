@@ -17,7 +17,7 @@ function App() {
   // disable load button when its loading tasks. track the get request
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [title, setTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
   // disable add button when adding a new task. track the post request
   const [creating, setCreating] = useState(false);
   // disable complete button when completing a task
@@ -55,7 +55,7 @@ function App() {
   async function createTask() {
     setErrorMessage('');
 
-    if (title.trim() === '') {
+    if (newTaskTitle.trim() === '') {
       setErrorMessage('Please enter a valid task title');
       return;
     }
@@ -68,7 +68,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ title: title.trim() }) // convert js object into a JSON 
+        body: JSON.stringify({ title: newTaskTitle.trim() }) // convert js object into a JSON 
       });
 
       if (!response.ok) {
@@ -77,7 +77,7 @@ function App() {
 
       const newTask: Task = await response.json();
       setTasks((oldTasks) => { return [...oldTasks, newTask] });
-      setTitle('');
+      setNewTaskTitle('');
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not create task. Please try again");
@@ -124,14 +124,13 @@ function App() {
   }
 
   async function handleEdit(id: number, title: string) {
-    try {
       const response = await fetch(`http://localhost:8080/tasks/${id}`, {
         method: "PATCH",
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          title: title.trim()
+          title: title
         })
       });
       if (!response.ok) {
@@ -141,9 +140,6 @@ function App() {
       setTasks(tasks.map((task) => {
         return task.id == id ? updatedTask : task;
       }));
-    } catch (error) {
-      setErrorMessage("Failed to edit the task");
-    }
   }
 
   return (
@@ -153,8 +149,8 @@ function App() {
         id="task-title"
         type="text"
         placeholder='Enter a task title'
-        value={title}
-        onChange={(event) => { setTitle(event.target.value) }}
+        value={newTaskTitle}
+        onChange={(event) => { setNewTaskTitle(event.target.value) }}
       />
       <button type='button' onClick={createTask} disabled={creating}>
         {creating ? 'Creating...' : 'Add a Task'}
