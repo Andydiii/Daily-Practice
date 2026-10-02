@@ -391,7 +391,7 @@ an HTTP response can’t send Java objects directly. They need to be converted i
 
 ### POST: 
 - `@PostMapping("/tasks")`: routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
-- `@RequestBody`: tells Spring to use its JSON converter to convert the incoming JSON body into a `CreateTaskRequest` object. JSON converter creates an `CreateTaskRequest` object and uses `CreateTaskReqeust.setTitle()` to put the incoming value there. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
+- `@RequestBody`: It is a request DTO(Data transfer obejct): tells Spring to use its JSON converter to convert the incoming JSON body into a `CreateTaskRequest` object. JSON converter creates an `CreateTaskRequest` object and uses `CreateTaskReqeust.setTitle()` to put the incoming value there. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
 - request: the parameter holding that object. You can read its title with `request.getTitle()`.
 - Task: this method will return the newly created task.
 - title == null detects a missing title.
