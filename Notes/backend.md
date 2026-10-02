@@ -20,6 +20,8 @@ public TaskController() {
 }
 ```
 
+## 
+
 ## what is interface. what is the difference between interface and class.
 - **Interface**: says which operations/functions are available.
 - **Implementation class**: contains the code that performs them.
@@ -30,7 +32,6 @@ public interface Animal {
 }
 ```
 This says: any class cliam be to an `Animal` must have a `makeSound()` method.
-
 
 # public/private/protected,  static/non-static method, final:
 **public/private/protected**: who can call me? 
@@ -94,6 +95,22 @@ try {
 
 
 # Java Data Structure
+
+## Set
+```java
+Set<Integer> numbers = new HashSet<>();
+numbers.add(3);       // true: 3 was added
+numbers.add(3);       // false: 3 was already there
+numbers.contains(3);  // true
+numbers.remove(3);    // true: 3 was removed
+numbers.size();       // 0
+numbers.isEmpty();    // true
+```
+| Operation | Java method | Result |
+|---|---|---|
+| Union | `a.addAll(b)` | Elements in either set |
+| Intersection | `a.retainAll(b)` | Elements in both sets |
+| Difference | `a.removeAll(b)` | Elements in `a` but not `b` |
 
 ## Hashmap
 Import the HashMap class: `import java.util.HashMap; ` 
@@ -336,10 +353,16 @@ Later, clicking Load Tasks calls getTasks() on that existing controller.
 
 ## HTTP request handle:
 ### Status code:
+- code `2xx` means successful request:
+`200 OK` - general/standard/default status code for all successful request
 `201 Created`
-`200 OK`
-`400 Bad Request`
-`404 Not Found`
+`204 No Content` - request was successful, but no data sent back in the response body (common after deleting an item).
+- code `4xx` means client-side issue:
+`400 Bad Request` - The server cannot process the request because of malformed syntax or a client-side error.
+`404 Not Found` - The server cannot find the requested URL or resource.
+- code `5xx` means the website's server encountered an error and could not fulfill a valid request from the client
+`500 internal server error` - The server hit a generic, unexpected problem and cannot be more specific.
+`503 Service Unavailable`: The server is temporarily down for maintenance or overloaded with too much traffic.
 
 ### GET: 
 when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
@@ -368,11 +391,11 @@ an HTTP response can’t send Java objects directly. They need to be converted i
 
 ### POST: 
 - `@PostMapping("/tasks")`: routes POST /tasks to this method. Your existing GET method handles the same path with a different HTTP method.
-- `@RequestBody`: tells Spring to convert the incoming JSON body into a `CreateTaskRequest` object. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
+- `@RequestBody`: tells Spring to use its JSON converter to convert the incoming JSON body into a `CreateTaskRequest` object. JSON converter creates an `CreateTaskRequest` object and uses `CreateTaskReqeust.setTitle()` to put the incoming value there. If incoming request body is empty e.g. `{}` as request json body, then Spring's JSON convertor creates a `CreateTaskRequestor` object called `requestor` using its no-argument constructor. then the fields all default to null. when we use `requestor.getTitle()` we get `null`.
 - request: the parameter holding that object. You can read its title with `request.getTitle()`.
 - Task: this method will return the newly created task.
 - title == null detects a missing title.
-- title.isBlank() detects "" or whitespace-only text.
+- `title.isBlank()` detects "" or whitespace-only text.
 - || skips isBlank() when the title is null.
 - new `ResponseStatusException(...)` creates an exception carrying an `HTTP status` and a `reason`.
 - throw exits the normal method flow. Spring handles the exception and returns 400.
@@ -488,7 +511,7 @@ float   → Float
 byte    → Byte
 short   → Short
 
-# Set up Repository & DB 
+# Set up Repository & DB & springboot backend after repository
 1. A dependency is a library Maven downloads for your Java project. We add two dependencies into `pom.xml` because they do different jobs:
 **Spring Data JPA**: `spring-boot-starter-data-jpa` helps your code work with stored tasks. Later, Then code such as repository.save(task) can save a task without us writing the basic SQL ourselves. Spring Data JPA provides that programming interface.
 **PostgreSQL JDBC driver**: `org.postgresql:postgresql` lets Java communicate with PostgreSQL. It is the JDBC driver: the software that sends database commands to the PostgreSQL server and receives results. JPA needs a driver for the particular database we chose. 
@@ -585,7 +608,10 @@ return taskRepository.save(newTask);
 ```
 
 ### PUT request using findById(), orElseThrow()
-`orElseThrow`: needs a function that creates exception.
+`orElseThrow`: needs a function that creates exception. 
+    - Task found: `orElseThrow(...)` gives you that Task, assigns it to task, and execution reaches `taskRepository.delete(task)`.
+    - Task missing: `orElseThrow(...)` throws the exception, so the delete line is never reached.
+    - the expression after -> implicitly returns the new exception object to orElseThrow. Then orElseThrow throws it. You don’t write return or throw inside this short lambda.
 `() -> {}`: is a lambda function but java uses `->` as arrow (js uses `=>`), `()` means it taks no arguments.
 `findById(id)`: looks for the task in PostgreSQL.
 `save(target)`: writes that change to PostgreSQL and returns the updated task.
@@ -601,6 +627,43 @@ public Task markCompleted(@PathVariable int id) {
     return taskRepository.save(target);
 }
 ```
+
+### Patch vs PUT
+`PATCH` means change part of an existing resource. `PUT` means create or replace the state of the resource at that URL
+```java
+// For a task that currently looks like this:
+{"id": 3, "title": "Learn SQL", "completed": false}
+```
+PATCH /tasks/3 with {"title":"Practice SQL"} means change the title and leave completed as false.
+PUT /tasks/3 would normally provide the task’s complete new state, including its title and completion status.
+current existing PUT /tasks/{id}/complete is a dedicated action endpoint that you already built;
+
+### Delete(deleteById and delete):
+- `@ResponseStatus(HttpStatus.NO_CONTENT)` returns `204 No Content` when successful
+- way one to delete from repository: `deleteById()`;
+```java
+@Service
+public class ProductService {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    public void deleteProduct(Long id) {
+        // Optional check to ensure it exists before trying to delete
+        if (productRepository.existsById(id)) {
+            productRepository.deleteById(id); //
+        }
+    }
+}
+```
+
+- delete By Entity Object: `delete()`
+```java
+public void deleteProduct(Product product) {
+    productRepository.delete(product); 
+}
+```
+
 
 ### When does .save() update the exisiting task VS create a new task into DB?
 - `save()` looks at the Task’s ID to choose a path. With your current int id and no version field, the simplified logic is:

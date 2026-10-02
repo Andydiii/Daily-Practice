@@ -76,10 +76,21 @@ body option in the POST is to specify what content we wanna send to backend. In 
 
 No setting Content-type does not convert js object into JSON. It only tells us that the request body will be in JSON format. but `JSON.stringify` converts the js object into json format.
 
-- Q12: Why does findById(id) return an Optional<Task> instead of a Task? What does orElseThrow(...) do when the ID doesn’t exist?
+- Q12: Why does `findById(id)` return an Optional<Task> instead of a Task? What does `orElseThrow(...)` do when the ID doesn’t exist?
 ```java
 taskRepository.findById(id)
     .orElseThrow(() -> new ResponseStatusException(
         HttpStatus.NOT_FOUND, "Cannot find the task"));
 ```
-A: becuase it may not find any Task has that id, so return `Optional.empty()` when it finds no task. Thus orElseThrow() comes to deal with the returning nothing case. In that case(didnt find a task with this id), throw a status code `404 Not Found` with the reason "Cannot find the task".
+A: becuase it may not find any Task has that id, so return `Optional<Task>` when it finds task, and a `Optional.empty()` when finds no Task. `orElseThrow()` returns the Task when present; otherwise it throws `ResponseStatusException` with status code `404 Not Found` and the reason "Cannot find the task".
+
+- Q13: backend failure handling. Suppose POST /tasks passes title validation, but PostgreSQL is unavailable when taskRepository.save(newTask) runs.
+1. The HTTP response?
+2. The task list shown in React?
+3. The title still in the input box?
+
+A:
+1. a database down usually produce `500 internal server error`. save() throws before the controller returns. Spring Boot handles the uncaught error by default
+2. The tasks will be unchanged. same as if the request has not been made.
+3. title should still be kept since user may wanna retry.
+

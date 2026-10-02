@@ -117,7 +117,27 @@ Aug 29
 - [X] Database: set up persistent storage, move GET, POST, and complete-task off the controller’s list, then verify a task survives a backend restart.
 - [X] Java algorithm: move all zeros in an array to the end while keeping the other numbers in order.
 - [X] SQL: practise a LEFT JOIN with rows that have no match.
-- [ ] Fundamentals: explain how an HTTP update request reaches the right task and what happens on failure.
-- [ ] System design: trace the update through controller, service, and repository.
-- [ ] Interview practice: give a short explanation of a decision you made in the Todo app.
-- [ ] Applications: a 30-minute block for suitable entry-level roles. 
+- [X] Fundamentals: explain how an HTTP update request reaches the right task and what happens on failure.
+- [X] System design: trace the update through controller, service, and repository.
+- [X] Interview practice: give a short explanation of a decision you made in the Todo app.
+- [X] Applications: a 30-minute block for suitable entry-level roles. 
+
+9.28:
+- [X] Spring Boot: Add DELETE /tasks/{id} and test 204 for success and 404 for a missing ID.
+- [X] React: Add a Delete button that calls the API and removes the task from state after success.
+- [X] Java algorithm: Solve LeetCode 26 — Remove Duplicates from Sorted Array in place.
+- [X] SQL: Solve LeetCode 577 — Employee Bonus to practise LEFT JOIN and NULL.
+- [X] Backend fundamentals: Explain how the API handles a failed database operation.
+- [X] System design: Decide how tasks would belong to individual users instead of being shared.
+- [X] Behavioral practice: One short interview answer; you can skip it again.
+- [X] Applications: One focused 20–30 minute application block.
+
+9.29
+- [X] Spring Boot: Add an endpoint to edit a task’s title. Validate blank titles and return 404 for a missing task.
+- [ ] React: Add an Edit button and update the displayed task after a successful request.
+- [ ] Java algorithm: Solve LeetCode 27, Remove Element, using two pointers.
+- [ ] SQL: Solve LeetCode 183, Customers Who Never Order.
+- [ ] Backend fundamentals: Explain why an API might use a request DTO instead of accepting a Task entity directly.
+- [ ] System design: Decide how task ownership should be checked for edit and delete requests.
+- [ ] Behavioral interview: Practice a project story other than the CORS example.
+- [ ] Applications: Spend 30 minutes on relevant new-grad roles.

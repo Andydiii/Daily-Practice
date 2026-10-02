@@ -1,8 +1,18 @@
 jsx is like a languge that we can write html inside javascript.
+# onClcik handler:
+- onClick expects a function that can be called later in `{}`, so when user clicks the button the function got triggered. But if we use the function directly e.g. `onClick={props.onEdit(id, newTitle)}`, then when first render the function got triggered and returned result `void` to onClick, which is not a function that can be called later.
+- In your case, props.onEdit(...) returns void, so React receives onClick={undefined} instead of a click handler, and TypeScript reports the error.
+- Use a named handleSave or onClick={() => props.onEdit(id, newTitle)} to delay that call until the click.
+```js
+onClick={handleSave}                 // pass the function; React calls it on click
+onClick={props.onEdit(id, newTitle)} // call it during render; pass its result
+```
+
 
 # HTML
 - Label + Input combo: used alot in form.
 ![](20260922163854.png)
+- `<button type="button"></button>` makes the button has no default action at all when I click it. By default, if you do not specify a type attribute, a <button> inside a <form> will act as a type="submit" button and attempt to submit form data to a server
 
 # props. 
 ## Example 1
@@ -125,8 +135,8 @@ const [expanded, setExpanded] = useState(false)
 ```
 
 
-## Render - IMPORTANT
-- state and render: we defined the state `searchText` in App component, so whenever the state is updated, 
+# Render - IMPORTANT
+## Case 1: one single setState() happend:
 0. decide whether to render: React compares the old and proposed state values. if the new state = old state, then react treat the state unchanged and skip the render.
 1. rerender: the component App() will be rerender (rerun/recalculation to get the new jsx that describes the UI, this step wont modify any actual DOM elements(real UI) ). 
 2. commit: compare the previous render and next render find the difference, commit the necessary changes to actual DOM.
@@ -134,7 +144,7 @@ const [expanded, setExpanded] = useState(false)
 
 ```jsx
 function App() {
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState('');d
 
   return (
     <>
@@ -158,8 +168,19 @@ return (
     </>
 )
 ```
-
-
+## Case 2: two setStates() in one handler:
+The sequence is:
+1. The handler calls both setters. React queues both updates.
+2. The handler finishes.
+3. React calculates the new state values and rerenders TaskCard once with both new values.
+4. React updates the displayed UI.
+So there isn’t an intermediate render where the draft has changed but isEditing is still false. Order can matter when updates depend on each other or when you update the same state more than once; it just doesn’t matter for these two independent updates.
+```js
+function startEditing() {
+    setEditing(true);
+    setDraftTitle(props.title);
+}
+```
 
 
 

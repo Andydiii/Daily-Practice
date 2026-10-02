@@ -69,6 +69,9 @@ Service: applies the app’s rules, such as rejecting a blank title and creating
 Repository: saves the task to the database.
 Your current TaskController does all three jobs itself. That works for practice; splitting it up will make more sense as we add a database.
 
+## If two users sign into your Todo app, what should the backend use to ensure GET /tasks returns only the signed-in user’s tasks?
+A: Authentication. Authentication tells backend who the user is. Usaully store a userId column in DB to track who the owner is of the task. For `GET /tasks`, the backend uses the authenticated `userId` to return the user's tasks. It must also check the ownership before updating and deleting a task. a frontend should not get to choose whose tasks to access just by sending a different ID.
+
 # Design Todo Database Tabel
 
 **We want to store tasks in a database. Each task has an id, a title, and a completed status. Which field would you choose as the primary key, and why would you choose it instead of title?** \
@@ -101,7 +104,11 @@ frontend sends HTTP POST request with body includes the title only to backend. b
 | `title`     | Non-null; also reject empty or whitespace-only text |
 | `completed` | Non-null, defaults to `false`                       |
 
+**two users send POST /tasks at the same time. Why is letting PostgreSQL generate each task’s ID safer than keeping a nextId counter in TaskController?**
+PostgreSQL handles the concurrent inserts and give each one a distinct id. It does not need to finish one request before the other request. 
 
- 
+with nextid in controller, concurrent inserts may could lead to reading the same nextId before either increments and thus two tasks with same id occured.
+
+
 
 

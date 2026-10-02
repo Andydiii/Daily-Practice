@@ -2,6 +2,7 @@ package com.andy.todo_api;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 /*
 Our current controller list has two limitations:
@@ -22,16 +24,17 @@ Restarting the backend would lose its contents.
 */
 
 
-// 告诉 Spring：这个 class负责接收 HTTP request并返回 response。
+
 // @CrossOrigin(origins = "http://localhost:5173") will make the response contain cors header and then the browser allows the specified origin to read the response body. otherwise browswer does not allow the react app to read the response JSON
 @CrossOrigin(origins = "http://localhost:5173") 
+// 告诉 Spring：这个 class负责接收 HTTP request并返回 response。
 @RestController
 public class TaskController {
     // similar to List<...> lst = new arrayList<>(); List is an interface and we will assign a implementation to it.
     private final TaskRepository taskRepository;
     
     // when backend starts, the controllers are beans thus gets created automatically by Spring, the field is initialized when startup.
-    private List<Task> tasks;
+    // private List<Task> tasks;
     private int nextId = 3;
 
     // 收到 GET /tasks 时，执行下面的 hello() 方法。
@@ -43,9 +46,9 @@ public class TaskController {
     // to be a constructor, there should not be a return type.
     public TaskController(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        this.tasks = new ArrayList<Task>();
-        tasks.add(new Task(1, "Task 1", false));
-        tasks.add(new Task(2, "Task 2", false));
+        // this.tasks = new ArrayList<Task>();
+        // tasks.add(new Task(1, "Task 1", false));
+        // tasks.add(new Task(2, "Task 2", false));
 
     }
 
@@ -84,6 +87,37 @@ public class TaskController {
 
         target.setCompleted();
         return taskRepository.save(target);
+    }
+
+    @DeleteMapping("/tasks/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteTask(@PathVariable int id) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find the task");
+        });
+        // when we reach here, we found the task
+        taskRepository.delete(task);
+    }
+
+    // for updating existing task's title only.
+    @PatchMapping("/tasks/{id}")
+    public Task editTitle(@PathVariable int id, @RequestBody UpdateTaskTitleRequest request) {
+        String title = request.getTitle();
+
+        if (title == null || title.isBlank()) {
+            throw new ResponseStatusException(
+              HttpStatus.BAD_REQUEST,
+              "You must enter a valid title"  
+            );
+        }
+
+        Task task = taskRepository.findById(id).orElseThrow(() -> {
+            return new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to find the task");
+        });
+        
+        task.setTitle(title);
+
+        return taskRepository.save(task);
     }
 }
 

@@ -44,4 +44,8 @@ public class Task {
     public void setCompleted() {
         this.completed = true;
     }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 }

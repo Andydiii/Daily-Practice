@@ -2,6 +2,8 @@
 In SQL Server, **NOT IN** compares one expression against a list or a subquery that returns one column: e.g.
 `WHERE id NOT IN (SELECT id FROM OtherTable)`
 
+but notice if the subquery `SELECT id FROM OtherTable` returns a column with two nulls, that is (null, null). Then we check if the `id not in (null, null)` which always returns `unknown` not `True` so the id wont be selected. it only gets selected when True.
+
 To compare a combination of columns, use **NOT EXISTS**:
 **it includes the row from t when it finds a row in o where both col1 and col2 match**
 Its like doing: For each row in t, does that row match a row in o such that t.col1 and t.col2 match o.col1 and o.col2, if so, then display that row, if not then we not selct that row.

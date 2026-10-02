@@ -13,11 +13,11 @@ type Task = {
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
-  
+
   // disable load button when its loading tasks. track the get request
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [title, setTitle] = useState('');
+  const [newTaskTitle, setNewTaskTitle] = useState('');
   // disable add button when adding a new task. track the post request
   const [creating, setCreating] = useState(false);
   // disable complete button when completing a task
@@ -55,7 +55,7 @@ function App() {
   async function createTask() {
     setErrorMessage('');
 
-    if (title.trim() === '') {
+    if (newTaskTitle.trim() === '') {
       setErrorMessage('Please enter a valid task title');
       return;
     }
@@ -67,8 +67,8 @@ function App() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
-        }, 
-        body: JSON.stringify({title: title.trim()}) // convert js object into a JSON 
+        },
+        body: JSON.stringify({ title: newTaskTitle.trim() }) // convert js object into a JSON 
       });
 
       if (!response.ok) {
@@ -76,8 +76,8 @@ function App() {
       }
 
       const newTask: Task = await response.json();
-      setTasks((oldTasks) => {return [...oldTasks, newTask]});
-      setTitle('');
+      setTasks((oldTasks) => { return [...oldTasks, newTask] });
+      setNewTaskTitle('');
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not create task. Please try again");
@@ -90,8 +90,8 @@ function App() {
     setCompleting(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/tasks/${id}/complete`, 
-        {method: 'PUT'}
+        `http://localhost:8080/tasks/${id}/complete`,
+        { method: 'PUT' }
       );
       if (!response.ok) {
         throw new Error("Failed to complete the task");
@@ -107,6 +107,41 @@ function App() {
     }
   }
 
+  async function handleDelete(id: number) {
+    try {
+      const response = await fetch(`http://localhost:8080/tasks/${id}`, {
+        method: "DELETE"
+      });
+      if (!response.ok) {
+        throw new Error("Failed to delete the task");
+      }
+      setTasks(tasks.filter((task) => {
+        return task.id != id;
+      }))
+    } catch (error) {
+      setErrorMessage("Failed to delete the task")
+    }
+  }
+
+  async function handleEdit(id: number, title: string) {
+      const response = await fetch(`http://localhost:8080/tasks/${id}`, {
+        method: "PATCH",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          title: title
+        })
+      });
+      if (!response.ok) {
+        throw new Error("Failed to edit the task");
+      }
+      const updatedTask = await response.json();
+      setTasks(tasks.map((task) => {
+        return task.id == id ? updatedTask : task;
+      }));
+  }
+
   return (
     <>
       <label htmlFor="task-title">New Task Title</label>
@@ -114,8 +149,8 @@ function App() {
         id="task-title"
         type="text"
         placeholder='Enter a task title'
-        value={title}
-        onChange={(event) => {setTitle(event.target.value)}}
+        value={newTaskTitle}
+        onChange={(event) => { setNewTaskTitle(event.target.value) }}
       />
       <button type='button' onClick={createTask} disabled={creating}>
         {creating ? 'Creating...' : 'Add a Task'}
@@ -135,6 +170,8 @@ function App() {
           completed={task.completed}
           onComplete={handleComplete}
           completing={completing}
+          onDelete={handleDelete}
+          onEdit={handleEdit}
         />
       ))}
     </>
