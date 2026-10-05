@@ -13,18 +13,13 @@ public class Task {
     private String title;
     private boolean completed;
 
-    protected Task() {
+    // non-argument ctor still works when we have another ctor.
+    // if we have the other ctor, java does not provie the Task() {} anymore.
+    protected Task() { 
 
     }
 
     public Task(String title, boolean completed) {
-        this.title = title;
-        this.completed = completed;
-    }
-
-    // constructor
-    public Task(int id, String title, boolean completed) {
-        this.id = id;
         this.title = title;
         this.completed = completed;
     }

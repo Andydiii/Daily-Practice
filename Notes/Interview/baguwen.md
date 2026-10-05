@@ -94,3 +94,8 @@ A:
 2. The tasks will be unchanged. same as if the request has not been made.
 3. title should still be kept since user may wanna retry.
 
+
+- Q13: 你现在的 PATCH /tasks/{id} 接收 UpdateTaskTitleRequest，其中只有 title。想一想：为什么method parameter 用这个class，而不是直接用数据库实体 Task？如果客户端在request JSON 里也写了 id 和 completed，我们希望这个接口允许修改它们吗？
+
+A: 1. why we use class `UpdateTaskTitleRequest` is because this endpoint is to update the existing tasks' `title`, and this class tells spring to use json converter to convert incoming request body that contains only `title` into a `UpdateTaskTitleRequest` object. We should not use `Task` since this patch is deigned for updating the title in existing task.
+we dont want this endpoint to update the `id` and `completed` since this endpoint is used only for updating title. `Complete` status update is handled by the other endpoint.

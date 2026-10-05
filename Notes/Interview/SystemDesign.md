@@ -72,6 +72,19 @@ Your current TaskController does all three jobs itself. That works for practice;
 ## If two users sign into your Todo app, what should the backend use to ensure GET /tasks returns only the signed-in user’s tasks?
 A: Authentication. Authentication tells backend who the user is. Usaully store a userId column in DB to track who the owner is of the task. For `GET /tasks`, the backend uses the authenticated `userId` to return the user's tasks. It must also check the ownership before updating and deleting a task. a frontend should not get to choose whose tasks to access just by sending a different ID.
 
+## Imagine we add sign-in later. User A owns task 7, but user B sends:
+```java
+PATCH /tasks/7
+Content-Type: application/json
+
+{"title":"Changed by B"}
+```
+Where should the backend get the identity of the person making the request? Before saving, what should it check about task 7? Tell me the flow in your own words; you don’t need to write code yet.
+
+the backend must verify the authentication token or session.
+
+After identifying user B, the backend loads task 7, compares its owner with B, and updates it only if they match. Otherwise it returns an error such as `403` Forbidden or `404` Not Found, without changing the database. We’d apply the same ownership check to delete and completion requests.
+
 # Design Todo Database Tabel
 
 **We want to store tasks in a database. Each task has an id, a title, and a completed status. Which field would you choose as the primary key, and why would you choose it instead of title?** \
