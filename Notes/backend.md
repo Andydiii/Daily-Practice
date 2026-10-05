@@ -19,8 +19,7 @@ public TaskController() {
     tasks.add(new Task(2, "Task 2", false));
 }
 ```
-
-## 
+ 
 
 ## what is interface. what is the difference between interface and class.
 - **Interface**: says which operations/functions are available.
@@ -37,11 +36,11 @@ This says: any class cliam be to an `Animal` must have a `makeSound()` method.
 **public/private/protected**: who can call me? 
 **static/non-static:** who does the method belong to? Does the method belong to the class or object?
 
-private method: can only be called inside the class
+**private** method: can only be called inside the class
 
-public method: so the method can be called outside the class. so other methods in other class can also call public method.
+**public** method: so the method can be called outside the class. so other methods in other class can also call public method.
 
-protected method: code inside same class e.g. `Task`, other classes in the same package e.g. `com.andy.todo_api`, and subclasses can call it.
+**protected** method: code inside same class e.g. `Task`, other classes in the same package e.g. `com.andy.todo_api`, and subclasses can call it.
 
 normal method: has to create the object first before call the method. e.g. has to create a object twosum first and then twosum.main()
 
@@ -425,6 +424,38 @@ public Task createTask(@RequestBody CreateTaskRequest request) {
 }
 ```
 
+### PUT request(including path variables)
+- these two methods both works.
+```java
+// way 1: only one var
+@PutMapping("/tasks/{id}/complete")
+public Task completeTask(@PathVariable("id") int id) {
+    // ...
+}
+
+// way 1: multiple vars
+@GetMapping("/tasks/{taskId}/comments/{commentId}")
+public Comment getComment(
+    @PathVariable int taskId,
+    @PathVariable int commentId
+) {
+    // ...
+}
+
+// way 2 
+// For /tasks/2/comments/8, taskId is 2 and commentId is 8.
+@GetMapping("/tasks/{taskId}/comments/{commentId}")
+public Comment getComment(
+    @PathVariable("taskId") int taskId,
+    @PathVariable("commentId") int commentId
+) {
+    // ...
+}
+```
+
+
+
+
 ## CROS problem: CORS(Cross-Origin Resource Sharing) error when loading tasks 
 While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully, then tested error handling by stopping the backend and confirming that loading worked again after restarting it.
 
@@ -462,36 +493,6 @@ Your React code reads the JSON and calls setTasks(data).
 
 So the browser can receive the backend response but refuse to let the React app read it. That explains why you saw both 200 OK and a CORS error.
 
-## PUT request(including path variables)
-- these two methods both works.
-```java
-// way 1: only one var
-@PutMapping("/tasks/{id}/complete")
-public Task completeTask(@PathVariable("id") int id) {
-    // ...
-}
-
-// way 1: multiple vars
-@GetMapping("/tasks/{taskId}/comments/{commentId}")
-public Comment getComment(
-    @PathVariable int taskId,
-    @PathVariable int commentId
-) {
-    // ...
-}
-
-// way 2 
-// For /tasks/2/comments/8, taskId is 2 and commentId is 8.
-@GetMapping("/tasks/{taskId}/comments/{commentId}")
-public Comment getComment(
-    @PathVariable("taskId") int taskId,
-    @PathVariable("commentId") int commentId
-) {
-    // ...
-}
-```
-
-
 
 # Data sturcture type delcaration
 | Data structure | Primitive allowed? | Example                   |
@@ -512,12 +513,14 @@ byte    → Byte
 short   → Short
 
 # Set up Repository & DB & springboot backend after repository
-1. A dependency is a library Maven downloads for your Java project. We add two dependencies into `pom.xml` because they do different jobs:
+## pom.xml
+A dependency is a library Maven downloads for your Java project. We add two dependencies into `pom.xml` because they do different jobs:
 **Spring Data JPA**: `spring-boot-starter-data-jpa` helps your code work with stored tasks. Later, Then code such as repository.save(task) can save a task without us writing the basic SQL ourselves. Spring Data JPA provides that programming interface.
 **PostgreSQL JDBC driver**: `org.postgresql:postgresql` lets Java communicate with PostgreSQL. It is the JDBC driver: the software that sends database commands to the PostgreSQL server and receives results. JPA needs a driver for the particular database we chose. 
 `Your controller → repository/JPA → PostgreSQL driver → todo_app database`
 
-2. added three folowing properties to `TodoApp/todo-api/src/main/resources/application.properties`:
+## application.properties
+- added three folowing properties to `TodoApp/todo-api/src/main/resources/application.properties`:
 **url**: connect to PostgreSQL on your computer (`localhost`), using port `5432`, and select the `todo_app` database.
 **username**: sign in as the PostgreSQL user `postgres`.
 **password**: `${DB_PASSWORD}` tells Spring Boot to get the password from a setting outside this file. That way, your password doesn’t go into a file you might commit to Git. Spring Boot supports this placeholder syntax.
@@ -526,17 +529,19 @@ spring.datasource.url=jdbc:postgresql://localhost:5432/todo_app
 spring.datasource.username=postgres
 spring.datasource.password=${DB_PASSWORD}
 ```
+- Add this line `spring.jpa.hibernate.ddl-auto=update` to `TodoApp/todo-api/src/main/resources/application.properties`: \
+`spring.jpa.hibernate.ddl-auto=update` controls what Hibernate does to the database structure when the backend starts. For this local practice app, update tells it to create a missing table or add missing columns based on your entity.
 
-3. Add this line `spring.jpa.hibernate.ddl-auto=update` to `TodoApp/todo-api/src/main/resources/application.properties`:
-`ddl-auto` controls what Hibernate does to the database structure when the backend starts. For this local practice app, update tells it to create a missing table or add missing columns based on your entity.
-
-## change to Task.java
+## Task.java
+- when we ask JPA to retrieve a existing task from DB e.g. `taskRepository.findById(10);`:
+    1. JPA find the task with id 10
+    2. JPA needs a no-argument empty constructor to call `new task()` to create a new empty task object
+    3. JPA fills that object's `id`, `title`, `completed`
+    4. our code receives the populated object.
+- we explicitly write it in the class becuase java does not provide default constructor(empty no-argument ctor) after we have another ctor. so we declared that in case we want to have our own ctor to create a new task in our code.
+- When our own code creates a new task, we’ll add a separate constructor such as `Task(String title, boolean completed)` to set those fields. So the two constructors serve different purposes: the empty one lets JPA load rows; the one with arguments lets our code create new users.
+- Creating a brand-new task is a different path: our code will construct an `task` with the new `title` and `completed`, then call `save(...)` to insert a row.
 ```java
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id
-
 @Entity
 public class Task {
     @Id
@@ -549,7 +554,7 @@ public class Task {
 ```
 - `@Entity` tells JPA that Task can be stored as a row in a database table.
 - `@Id` marks id as the row’s unique identifier.
-- `@GeneratedValue(strategy = GenerationType.IDENTITY)` says the database will generate IDs when we start saving tasks through the repository. Your current controller still supplies IDs for its in-memory list; we’ll remove that later. For example, later our code will create a task with a title but without choosing an ID. When we save it, PostgreSQL generates the ID, and the returned task can include that ID
+- `@GeneratedValue(strategy = GenerationType.IDENTITY)` says the database will generate IDs when we start saving tasks through the repository. our code will create a task with a title but without choosing an ID. When we save it, PostgreSQL generates the ID, and the returned task can include that ID
 - `@GeneratedValue` is an annotation on the id field. It tells JPA: “When saving a new Task, generate its ID instead of requiring my code to choose one.”
 - `strategy` = names the annotation setting we’re choosing. In Java annotation syntax, it means “set the strategy option to this value.”
 - `protected Task() {}` is an empty constructor JPA needs when it builds a Task from a database row. We keep your existing constructor so the current controller still compiles
@@ -576,10 +581,21 @@ public class Task {
 
 - Why need this file?:  It gives your controller a TaskRepository it can call. Later, instead of searching your Java list, the controller can call:  `repository.findById(id);` Spring Data handles that database operation and returns the matching task if one exists. Creating the file alone won’t move data: we still need to change the controller to call the repository.
 
+## AppUserRepository.java
+### `Optional<AppUser> findByEmail(String email);`
+- why in `taskRepository.java`, we dont have the extra line in body?
+A: TaskRepository only needed the methods it inherited from JpaRepository, such as `findById(id)`, `findAll()`, and `save(task)`. For login, we know the user’s email, but we may not know their database ID. JpaRepository does not provide `findByEmail`, so we declare it in AppUserRepository:
+- Spring Data JPA reads the method name and creates the query for the `email` field. `Optional<AppUser>` means an email may not exist in the database. We declare the method; we do not write its implementation ourselves.
+```java
+public interface AppUserRepository extends JpaRepository<___, ___> {
+    Optional<AppUser> findByEmail(String email);
+}
+```
+
 ## TaskController.java
 
 ### Constructor & repository
-when we run java spring boot app, the beans(e.g. controllers) gets created and initilized automatically. When it creates TaskController Spring supplies the TaskRepository argument(the real implementation) . `this.taskRepository = taskRepository` saves that supplied object in the controller’s field.
+when we run java spring boot app, the beans(e.g. controllers) gets created and initilized automatically. When it creates `TaskController`, Spring supplies the TaskRepository argument(the real implementation) . `this.taskRepository = taskRepository` saves that supplied object in the controller’s field.
 ```java
 public TaskController(TaskRepository taskRepository) {
     this.taskRepository = taskRepository;
@@ -676,3 +692,35 @@ if (task.getId() == 0) {
     // Existing task: merge its changes
 }
 ```
+
+
+
+
+
+# postman
+- used to send http request from postman to test API (can bypass frontend)
+
+## Why does Postman work without a CORS error?
+The Postman desktop app sends HTTP requests outside the browser, so the browser’s CORS restriction does not apply. If you use Postman’s web app, its Desktop Agent can send the request outside the browser too. @CrossOrigin did not authorize Postman; it tells browsers which webpage origins may access the response.
+
+# Authentication:
+## Authentication
+in a system with login, the backend authenticates the user when they log in. It checks their credentials and, if valid, establishes a session or issues a token. On later requests, it checks the session cookie or token to identify the user again; React does not simply tell the backend “I’m Alice.”
+Think of both `session` and `token` as ways to avoid sending your password with every task request.
+ 
+## what happens when user make request:
+before a user modify/delete a task, There are two checks:
+1. Authentication: Who is making DELETE /tasks/7?
+2. Authorization: Does task 7 belong to that user?
+Bob can be successfully logged in but still must not be allowed to delete Alice’s task. Our current Todo app has not implemented login yet—we’re designing these checks before adding them.
+
+## Session: the backend remembers you
+1. Alice logs in. The backend checks her credentials.
+2. The backend creates a session and sends a session ID associated with Alice in a cookie to browser, for example: `session=abc123`
+3. When user sends a request e.g. `GET /tasks`, the browser sends that cookie to backend, and then backend looks up `abc123`, then finds `Alice`, and returns the tasks whose `owner_id` is Alice's Id
+
+## Token: the client presents proof on each request
+After login, the client receives a token and sends it on later requests, commonly as:
+`Authorization: Bearer <token>`
+The backend verifies the token before accepting the identity it represents. A JWT is one type: the backend can check its signature and expiry. An opaque token is another type that typically requires a lookup. A token is not trustworthy just because a client sent one.
+
