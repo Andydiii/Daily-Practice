@@ -337,10 +337,69 @@ src/main/java 告诉 Maven“Java 代码从这里开始”，package 只从它�
 
 
 # springboot
-## Backend starts: Spring creates object for class registered as beans.
+## Spring Beans:
+### beans overall explan:
+```java
+@Configuration                 // Spring manages a PasswordConfig object
+public class PasswordConfig {
+    @Bean                      // Spring manages the returned encoder object
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+}
+```
+1. spring only created the objects that are bean when it startups. `A: Spring does not create only beans. It creates and manages beans, but other objects also exist in the app. For example, your code creates a Task with new Task(...), and JPA creates Task objects when loading database rows. Those Task objects are not Spring beans.`
+2. for this specific class marked as @configuration, springt mark it bean class, call its ctor, and found the @bean method, so called it immediately after spring called ctor of the bean class? and treat the object returned by this method as another bean? `Yes, both objects are beans in this example. Spring discovers @Configuration, manages a PasswordConfig object, and records that its @Bean method can provide a PasswordEncoder. Spring calls that method when it creates the encoder bean. It isn’t necessarily called immediately after the PasswordConfig constructor; Spring controls the startup order based on dependencies. By default, these shared beans are created during startup`
+3. in my understanding, bean is a object that will be created when app startup, other tyhan this, what is bean for?  `The main benefit of a bean is that Spring can give it to classes that need it. For example, we can later write a registration class like this:`
+4. Is there a reason we want to make `passwordEncoder` a bean? 
+```
+A: Yes. We’ll need the same password behavior in two places:
+- Registration: passwordEncoder.encode(password) creates the hash to store.
+- Login: passwordEncoder.matches(password, storedHash) checks a submitted password against that hash.
+Making it a bean lets Spring pass a PasswordEncoder into both classes. It also gives us one place, PasswordConfig, to choose which encoder the app uses.
+It’s not required to make it a bean. We could write new BCryptPasswordEncoder() in each class. The bean is useful here because both features depend on the same password encoding choice.
+```
+5. one important limit: Spring supplies a bean when another Spring-managed(`bean`) object asks for it, usually through a `constructor`. It does not automatically appear in every object or local variable.
+```java
+@Service
+public class AuthService {
+    private final PasswordEncoder passwordEncoder;
+
+    public AuthService(PasswordEncoder passwordEncoder) {
+        this.passwordEncoder = passwordEncoder;
+    }
+
+    // Registration will call passwordEncoder.encode(...)
+    // Login will call passwordEncoder.matches(...)
+}
+```
+
+### why we need bean concept?:
+The bean concept lets Spring connect the parts of your application. Imagine your `AuthService` needs a `PasswordEncoder` and an `AppUserRepository`. Without Spring managing them, you would create and connect the objects yourself:
+```java
+PasswordEncoder encoder = new BCryptPasswordEncoder();
+AppUserRepository repository = ...;
+AuthService authService = new AuthService(encoder, repository);
+```
+With beans, you declare what `AuthService` needs in its constructor. Spring creates the managed objects and passes them in. This is dependency injection.
+
+It also gives you **one place to configure an object**. For example, if we later change how passwords are encoded, we can change the encoder bean without changing every class that uses `PasswordEncoder`.
+
+You’ve already used this idea with `TaskRepository`: your controller asks for it in its constructor, and Spring supplies it. The password encoder follows the same pattern.
+
+### ways to register as Spring beans so far:
+| Your code | How Spring gets the bean |
+|---|---|
+| `@RestController` on `TaskController` or `service` | Discovers and creates the class |
+| `@Bean` on `passwordEncoder()` | Calls the method and keeps its returned object |
+| `TaskRepository extends JpaRepository` | Spring Data creates a repository implementation for TaskRepository |
+
+
+
+### When Backend starts: Spring creates and manages object for class registered as beans.
 `@RestController` tells Spring to register the class as a bean. When we start the springboot app(which is the backend), Spring creates the objects for all beans automatically. Thus all fields in the beans are initialzed as well.
 
-Other common annotations that register classes as beans include @Service, @Repository, and @Component. We’ll introduce those as the project grows.
+Other common annotations that register classes as beans include `@Service`, `@Repository`, and `@Component`. We’ll introduce those as the project grows.
 
 e.g. our TaskController:
 1. Spring finds TaskController through its annotation.
@@ -348,6 +407,17 @@ e.g. our TaskController:
 3. Your constructor creates the list and the two sample Task objects.
 4. The controller is ready to handle requests.
 Later, clicking Load Tasks calls getTasks() on that existing controller.
+
+
+
+
+```java
+public RegistrationService(PasswordEncoder passwordEncoder) {
+    this.passwordEncoder = passwordEncoder;
+}
+```
+Spring sees the constructor needs a PasswordEncoder and supplies the one created by PasswordConfig. That is called dependency injection. Spring also manages the bean’s lifetime and configuration.
+
 
 
 ## HTTP request handle:
@@ -358,10 +428,13 @@ Later, clicking Load Tasks calls getTasks() on that existing controller.
 `204 No Content` - request was successful, but no data sent back in the response body (common after deleting an item).
 - code `4xx` means client-side issue:
 `400 Bad Request` - The server cannot process the request because of malformed syntax or a client-side error.
+`401 Unauthorized` - 
 `404 Not Found` - The server cannot find the requested URL or resource.
+`409 Conflict` - describes something already registered.
 - code `5xx` means the website's server encountered an error and could not fulfill a valid request from the client
 `500 internal server error` - The server hit a generic, unexpected problem and cannot be more specific.
 `503 Service Unavailable`: The server is temporarily down for maintenance or overloaded with too much traffic.
+
 
 ### GET: 
 when we `return tasks`, Spring Json conversion library 'Jackson', does the conversion automatically from java object to JSON. dont need to call getter ourselve, the library calls the getter to get the value for each field since every field is private.
@@ -524,6 +597,16 @@ A dependency is a library Maven downloads for your Java project. We add two depe
 **url**: connect to PostgreSQL on your computer (`localhost`), using port `5432`, and select the `todo_app` database.
 **username**: sign in as the PostgreSQL user `postgres`.
 **password**: `${DB_PASSWORD}` tells Spring Boot to get the password from a setting outside this file. That way, your password doesn’t go into a file you might commit to Git. Spring Boot supports this placeholder syntax.
+
+| Setting | Where its value comes from |
+|---|---|
+| `jdbc:postgresql://localhost:5432/todo_app` | `localhost` means PostgreSQL is running on your computer; `5432` is the port selected during installation; `todo_app` is the database you created in pgAdmin. This is the JDBC URL format. ([pgJDBC][1]) |
+| `postgres` | The PostgreSQL **database account** you used to connect in pgAdmin. |
+| `${DB_PASSWORD}` | Spring reads an external setting named `DB_PASSWORD`. Its value must be the password for that PostgreSQL `postgres` account—the one you set during installation, unless you changed it later. ([docs.spring.io][2]) |
+
+[1]: https://jdbc.postgresql.org/documentation/use/?utm_source=chatgpt.com "Initializing the Driver"
+
+[2]: https://docs.spring.io/spring-boot/reference/features/external-config.html?utm_source=chatgpt.com "Externalized Configuration :: Spring Boot"
 ```
 spring.datasource.url=jdbc:postgresql://localhost:5432/todo_app
 spring.datasource.username=postgres
@@ -591,8 +674,6 @@ public interface AppUserRepository extends JpaRepository<___, ___> {
     Optional<AppUser> findByEmail(String email);
 }
 ```
-
-## TaskController.java
 
 ### Constructor & repository
 when we run java spring boot app, the beans(e.g. controllers) gets created and initilized automatically. When it creates `TaskController`, Spring supplies the TaskRepository argument(the real implementation) . `this.taskRepository = taskRepository` saves that supplied object in the controller’s field.
@@ -719,8 +800,53 @@ Bob can be successfully logged in but still must not be allowed to delete Alice�
 2. The backend creates a session and sends a session ID associated with Alice in a cookie to browser, for example: `session=abc123`
 3. When user sends a request e.g. `GET /tasks`, the browser sends that cookie to backend, and then backend looks up `abc123`, then finds `Alice`, and returns the tasks whose `owner_id` is Alice's Id
 
+
 ## Token: the client presents proof on each request
 After login, the client receives a token and sends it on later requests, commonly as:
 `Authorization: Bearer <token>`
 The backend verifies the token before accepting the identity it represents. A JWT is one type: the backend can check its signature and expiry. An opaque token is another type that typically requires a lookup. A token is not trustworthy just because a client sent one.
 
+
+## password encoding library
+### add password encoding librayry into `pom.xml` in `<dependencies>`:
+```xml
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-crypto</artifactId>
+</dependency>
+```
+
+After saving pom.xml, run mvn compile in the todo-api directory. Once it compiles, we’ll create the encoder and use it in registration. We run mvn compile as a quick check after editing pom.xml. Maven reads the new dependency, downloads it if needed, and compiles your Java code. If the dependency declaration has a problem, we can catch it before writing the registration code. It does not start the backend or test the database connection.
+
+
+# Service
+
+## what service is
+A service is a Java class that carries out an operation for your app. `@Service` tells Spring to create and manage an object of that class. That lets Spring pass in the `AppUserRepository` and `PasswordEncoder` it needs.
+For a `POST /register` request, the work would be:
+```markdown
+1. Controller: receives the HTTP request and reads its JSON.
+2. AuthService: applies the registration rules and calls the encoder.
+3. AppUserRepository: saves the user in PostgreSQL.
+4. Controller: sends the HTTP response.
+```
+
+Think of the controller as the HTTP entry point, the service as the steps for the task, and the repository as the database access. 
+
+## why we need service? 
+The practical difference is where the code lives, not what the app can do. For a small endpoint, putting everything in the controller is reasonable. We’re using a service here to keep the growing registration and login logic easier to follow and change.
+
+We’re adding `AuthService` because registration has several steps: validate the input, look up the email, hash the password, and save the user. Login will also need the repository and password encoder. Keeping those operations in one service leaves the controller focused on receiving requests and returning responses.
+
+```java
+// Controller: handles HTTP
+@PostMapping("/register")
+public ... register(@RequestBody RegisterUserRequest request) {
+    return authService.register(request);
+}
+
+// Service: carries out registration
+public ... register(RegisterUserRequest request) {
+    // validate, check email, encode password, save user
+}
+```
