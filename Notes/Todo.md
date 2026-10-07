@@ -134,10 +134,20 @@ Aug 29
 
 9.29
 - [X] Spring Boot: Add an endpoint to edit a task’s title. Validate blank titles and return 404 for a missing task.
-- [ ] React: Add an Edit button and update the displayed task after a successful request.
-- [ ] Java algorithm: Solve LeetCode 27, Remove Element, using two pointers.
-- [ ] SQL: Solve LeetCode 183, Customers Who Never Order.
-- [ ] Backend fundamentals: Explain why an API might use a request DTO instead of accepting a Task entity directly.
-- [ ] System design: Decide how task ownership should be checked for edit and delete requests.
-- [ ] Behavioral interview: Practice a project story other than the CORS example.
-- [ ] Applications: Spend 30 minutes on relevant new-grad roles.
+- [X] React: Add an Edit button and update the displayed task after a successful request.
+- [X] Java algorithm: Solve LeetCode 27, Remove Element, using two pointers.
+- [X] SQL: Solve LeetCode 183, Customers Who Never Order.
+- [X] Backend fundamentals: Explain why an API might use a request DTO instead of accepting a Task entity directly.
+- [X] System design: Decide how task ownership should be checked for edit and delete requests.
+- [X] Behavioral interview: Practice a project story other than the CORS example.
+- [X] Applications: Spend 30 minutes on relevant new-grad roles.
+
+10.6
+- [ ] Inform Eric to review at 4pm
+- [X] booked car on Friday
+- [ ] equipments
+- [ ] full stack dev
+- [ ] Solve one Java interview problem from our Grind 75 track.
+- [ ] Solve one SQL problem.
+- [ ] Review the authentication flow as a short system-design exercise.
+- [ ] Spend 30 minutes on job applications.

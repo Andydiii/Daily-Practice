@@ -32,10 +32,6 @@ Restarting the backend would lose its contents.
 public class TaskController {
     // similar to List<...> lst = new arrayList<>(); List is an interface and we will assign a implementation to it.
     private final TaskRepository taskRepository;
-    
-    // when backend starts, the controllers are beans thus gets created automatically by Spring, the field is initialized when startup.
-    // private List<Task> tasks;
-    private int nextId = 3;
 
     // 收到 GET /tasks 时，执行下面的 hello() 方法。
     @GetMapping("/tasks") 
@@ -43,13 +39,9 @@ public class TaskController {
         return taskRepository.findAll();
     }
 
-    // to be a constructor, there should not be a return type.
+    // taskController asks for taskRepository in its constructor, and Spring supplies it.
     public TaskController(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
-        // this.tasks = new ArrayList<Task>();
-        // tasks.add(new Task(1, "Task 1", false));
-        // tasks.add(new Task(2, "Task 2", false));
-
     }
 
     // 收到 POST /tasks 时，执行下面的方法。

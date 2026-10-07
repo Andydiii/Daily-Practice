@@ -32,4 +32,16 @@ public class AppUser {
         this.email = email;
         this.passwordHash = passwordHash;
     }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public String getEmail() {
+        return this.email;
+    }
+
+    public String getPasswordHash() {
+        return this.passwordHash;
+    }
 }
