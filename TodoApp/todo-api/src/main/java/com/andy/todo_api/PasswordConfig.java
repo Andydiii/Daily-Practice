@@ -6,7 +6,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 // Spring register both PasswordConfig and PasswordEncoder as beans.
-// PasswordEncoder will be used in the other beans  
+// @Bean makes the object returned by passwordEncoder() is created and managed by Spring when startup. and will be used in the other beans  
 // PasswordConfig defines the encoder → Spring creates it → Spring passes the encoder to AuthService.
 @Configuration 
 public class PasswordConfig {

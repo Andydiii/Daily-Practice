@@ -145,8 +145,8 @@ Aug 29
 10.6
 - [ ] Inform Eric to review at 4pm
 - [X] booked car on Friday
-- [ ] equipments
-- [ ] full stack dev
+- [X] equipments
+- [X] full stack dev
 - [ ] Solve one Java interview problem from our Grind 75 track.
 - [ ] Solve one SQL problem.
 - [ ] Review the authentication flow as a short system-design exercise.

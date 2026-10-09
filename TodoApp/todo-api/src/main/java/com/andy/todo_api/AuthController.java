@@ -1,6 +1,8 @@
 package com.andy.todo_api;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.web.csrf.CsrfToken;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,5 +21,10 @@ public class AuthController {
     public int register(@RequestBody RegisterUserRequest request) {
         // authService.register returns the postgreSQL generated Id for the new user got created.
         return authService.register(request);
+    }
+
+    @GetMapping("/auth/csrf")
+    public CsrfToken getCsrfToken(CsrfToken csrfToken) {
+        return csrfToken;
     }
 }

@@ -90,8 +90,25 @@ try {
 }
 ```
 
+- `throws Exception`: means “if an error occurs inside this method, I’m allowing it to go back to the code that called this method.” It does not create an exception by itself.
+```java
+void makeDinner() throws Exception {
+    cookRice(); // imagine cookRice() might throw an Exception
+}
 
+void start() {
+    try {
+        makeDinner();
+    } catch (Exception error) {
+        System.out.println("Dinner could not be made");
+    }
+}
+```
+If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares throws Exception, the exception travels back to `start()`, its caller. Then `start()` can catch it.
 
+- key difference between `throws Exception` and `throw new Exception(...)`:
+`throws Exception` in the method signature: this method may pass an exception to its caller.
+`throw new Exception(...)` inside the body: create and throw an exception right now.
 
 # Java Data Structure
 
@@ -348,8 +365,8 @@ public class PasswordConfig {
     }
 }
 ```
-1. spring only created the objects that are bean when it startups. `A: Spring does not create only beans. It creates and manages beans, but other objects also exist in the app. For example, your code creates a Task with new Task(...), and JPA creates Task objects when loading database rows. Those Task objects are not Spring beans.`
-2. for this specific class marked as @configuration, springt mark it bean class, call its ctor, and found the @bean method, so called it immediately after spring called ctor of the bean class? and treat the object returned by this method as another bean? `Yes, both objects are beans in this example. Spring discovers @Configuration, manages a PasswordConfig object, and records that its @Bean method can provide a PasswordEncoder. Spring calls that method when it creates the encoder bean. It isn’t necessarily called immediately after the PasswordConfig constructor; Spring controls the startup order based on dependencies. By default, these shared beans are created during startup`
+1. spring only created the objects that are bean when it startups? `A: Spring does not create only beans. It creates and manages beans, but other objects also exist in the app. For example, your code creates a Task with new Task(...), and JPA creates Task objects when loading database rows. Those Task objects are not Spring beans.`
+2. for this specific class marked as @configuration, springt mark it bean class, call its ctor, and found the @bean method, so called it immediately after spring called ctor of the bean class? and treat the object returned by this method as another bean? `Yes, both objects are beans in this example. Spring discovers @Configuration, manages a PasswordConfig object, and records that its @Bean method can provide a PasswordEncoder. @Bean tells Spring to keep that returned object and use it as part of the application. Spring calls that method when it creates the encoder bean. It isn’t necessarily called immediately after the PasswordConfig constructor; Spring controls the startup order based on dependencies. By default, these shared beans are created during startup`
 3. in my understanding, bean is a object that will be created when app startup, other tyhan this, what is bean for?  `The main benefit of a bean is that Spring can give it to classes that need it. For example, we can later write a registration class like this:`
 4. Is there a reason we want to make `passwordEncoder` a bean? 
 ```
@@ -394,6 +411,7 @@ You’ve already used this idea with `TaskRepository`: your controller asks for 
 | `@Bean` on `passwordEncoder()` | Calls the method and keeps its returned object |
 | `TaskRepository extends JpaRepository` | Spring Data creates a repository implementation for TaskRepository |
 
+### 
 
 
 ### When Backend starts: Spring creates and manages object for class registered as beans.
@@ -428,7 +446,8 @@ Spring sees the constructor needs a PasswordEncoder and supplies the one created
 `204 No Content` - request was successful, but no data sent back in the response body (common after deleting an item).
 - code `4xx` means client-side issue:
 `400 Bad Request` - The server cannot process the request because of malformed syntax or a client-side error.
-`401 Unauthorized` - 
+`401 Unauthorized`
+`403 Forbidden` - e.g. Todo backend is responding and its security rule is taking effect if someone sending request `GET /tasks` without login 
 `404 Not Found` - The server cannot find the requested URL or resource.
 `409 Conflict` - describes something already registered.
 - code `5xx` means the website's server encountered an error and could not fulfill a valid request from the client
@@ -850,3 +869,63 @@ public ... register(RegisterUserRequest request) {
     // validate, check email, encode password, save user
 }
 ```
+
+# spring-security-crypto
+`spring-security-crypto` gives you `PasswordEncoder` for hashing a password during registration and checking it during login
+
+# dependency spring-boot-starter-security:
+Spring Security puts a filter in front of your controllers. Each HTTP request passes through that filter before Spring calls `TaskController` or `AuthController`. The filter can identify the user and apply rules we configure, such as “`/auth/register` is public” and “`/tasks` requires sign-in.”
+
+or the session-based login we’re building, the flow will be:
+```markdown
+1. Login: The user sends an email and password. Your `AuthService.authenticate(...)` checks them against PostgreSQL.
+2. Remember the login: On success, we must tell Spring Security who was authenticated and save that information in a server-side session. The response gives the browser a session cookie.
+3. Later `GET /tasks`: The browser sends the cookie. Spring Security finds the session, identifies the user, and checks whether the request is allowed. If allowed, the request reaches `TaskController`; otherwise, it is stopped first. 
+```
+
+Your current authenticate(...) only does step 1. Returning a user ID does not by itself create a session or protect an endpoint. That is the connection we’ll implement next.
+
+There is one more check beyond “signed in”: when someone requests `/tasks/5`, our task code must verify that task 5 belongs to that user. Requiring sign-in alone would not establish ownership.
+
+# CSRF
+## what CSRF token is for?
+The problem CSRF solves: your browser sends a site’s session cookie automatically. Suppose you are signed in to a website, then visit a malicious website. That second website may be able to make your browser send a request to the first website. The first website sees your cookie and could mistake the request for something you intended to do.
+
+CSRF token is an extra thing to prevent the reqeust from malicious webtsite sent on behalf of us. The real app obtained that from the backend and put it into requests that change things. The backend asks: “I see your session cookie. Did this request also include the token I expected?” If the token is missing, it rejects the change. The cookie says which session this is; the CSRF token helps check whether this change came through the intended app flow or some malicious website.
+
+For your Todo app:
+- `GET /tasks` reads tasks, so no CSRF token is needed. It still requires sign-in.
+- `POST /tasks` creates a task, so Spring requires a CSRF token in addition to sign-in session
+- `POST /auth/login` changes the browser’s sign-in state, so Spring requires CSRF token there too. 
+
+## why the malicious site cannot read the token and add the token into the post request?
+Your React app runs at http://localhost:5173. Its code can call your permitted backend endpoint, read the CSRF token from the response, and add it to POST /tasks. The malicious site runs at a different origin. It may be able to cause the browser to send a request with your Todo cookie, but it cannot normally read the token response intended for your app. Browser origin rules prevent its code from reading that response unless the backend allows its origin.
+
+So the requests differ at the important point:
+```markdown
+Your app:       session cookie + correct CSRF token → accepted
+Malicious site: session cookie + no correct token   → rejected
+```
+
+
+# Spring MVC vs CSRF token 
+```markdown
+1. Postman sends POST `/auth/login`.
+2. Spring Security sees that POST needs a CSRF token. Because none was sent, it returns 403 and stops the request.
+3. The request never reaches Spring MVC, so Spring MVC never checks whether a controller mapping exists
+```
+
+# Bean:
+Tells Spring to call this method and manage the object it returns, so other Spring components can receive it through injection.
+
+# error dispatch:
+An error dispatch is when the server sends a request through its own processing steps again to produce an error response.
+For example, if `POST /auth/register` fails, Spring may internally route that same HTTP request to /error to build the response. Your browser or Postman did not send a second request.
+`RequestAttributeSecurityContextRepository` keeps the login information available during that internal error step. `HttpSessionSecurityContextRepository` handles later, separate requests.
+
+# A server-side HTTP session is a place on the backend that holds data for one browser’s ongoing visit.
+Think of it in two parts:
+1. Server: Keeps a session, such as session ABC, containing data for that browser.
+2. Browser: Keeps a cookie containing the session ID, such as JSESSIONID=ABC. It sends that cookie with later requests.
+After we implement login, HttpSessionSecurityContextRepository can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
+In your app, AuthService.authenticate() currently checks the password, but we have not yet saved the login information to the session. That is the next coding step.
