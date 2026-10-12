@@ -4,6 +4,7 @@ package com.andy.todo_api;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.context.DelegatingSecurityContextRepository;
@@ -20,6 +21,7 @@ public class SecurityConfig {
     // Spring calls this method while starting the app. If configuring or building the filter chain throws an exception, the method passes it back to Spring(Spring is the caller). Spring can then report that startup failed. It is not an exception sent to the frontend for a normal /tasks request.
     // Because this is a Spring @Bean method, Spring supplies the HttpSecurity object when it calls the method. You do not call securityFilterChain(...) yourself or create new HttpSecurity(...). You do not need to write an @Bean method for HttpSecurity. Spring Boot detects the security libraries when the app starts and activates its security configuration; Spring Security then makes HttpSecurity available to your SecurityFilterChain method.
     // The method returns a SecurityFilterChain object. @Bean tells Spring to keep that returned object and use it as part of the application.
+    // In your app, the CSRF protection is turned on  when you added Spring Security and register your own SecurityFilterChain. Spring Security enables CSRF protection by default.
     @Bean 
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests((auth) -> {
@@ -53,4 +55,5 @@ public class SecurityConfig {
     // new DelegatingSecurityContextRepository(...): Creates a repository that passes saving and loading work to the repositories inside its parentheses.
     // new RequestAttributeSecurityContextRepository(): Keeps the security context available during the current HTTP request, including an error dispatch within that request.
     // new HttpSessionSecurityContextRepository(): Stores the security context in the user’s server-side HTTP session, so it can be loaded on a later request.
+    // A server-side HTTP session is a place on the backend that holds data for one browser’s ongoing visit. Server: Keeps a session, such as session ABC, containing data for that browser.
 }

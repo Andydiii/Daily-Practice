@@ -893,6 +893,8 @@ The problem CSRF solves: your browser sends a site’s session cookie automatica
 
 CSRF token is an extra thing to prevent the reqeust from malicious webtsite sent on behalf of us. The real app obtained that from the backend and put it into requests that change things. The backend asks: “I see your session cookie. Did this request also include the token I expected?” If the token is missing, it rejects the change. The cookie says which session this is; the CSRF token helps check whether this change came through the intended app flow or some malicious website.
 
+In your app, the CSRF protection is turned on  when you added Spring Security and started using its SecurityFilterChain. Spring Security enables CSRF protection by default.
+
 For your Todo app:
 - `GET /tasks` reads tasks, so no CSRF token is needed. It still requires sign-in.
 - `POST /tasks` creates a task, so Spring requires a CSRF token in addition to sign-in session
@@ -929,3 +931,6 @@ Think of it in two parts:
 2. Browser: Keeps a cookie containing the session ID, such as JSESSIONID=ABC. It sends that cookie with later requests.
 After we implement login, HttpSessionSecurityContextRepository can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
 In your app, AuthService.authenticate() currently checks the password, but we have not yet saved the login information to the session. That is the next coding step.
+
+
+# 

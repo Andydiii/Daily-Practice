@@ -143,11 +143,13 @@ Aug 29
 - [X] Applications: Spend 30 minutes on relevant new-grad roles.
 
 10.6
-- [ ] Inform Eric to review at 4pm
+- [X] Inform Eric to review at 4pm
 - [X] booked car on Friday
 - [X] equipments
-- [X] full stack dev
+- [ ] full stack dev
 - [ ] Solve one Java interview problem from our Grind 75 track.
 - [ ] Solve one SQL problem.
 - [ ] Review the authentication flow as a short system-design exercise.
 - [ ] Spend 30 minutes on job applications.
+- [ ] brandon project run 
+- [ ] 
