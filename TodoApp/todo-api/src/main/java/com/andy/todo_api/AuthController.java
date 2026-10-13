@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.web.csrf.CsrfToken;
@@ -36,6 +38,7 @@ public class AuthController {
     }
 
     @GetMapping("/auth/csrf")
+    // I think we dont need to make it a bean in SecurityConfig is beacause its autoly registered by Spring when we import the Csrftoken? didnt confirm yet. confirm with gpt.
     public CsrfToken getCsrfToken(CsrfToken csrfToken) {
         return csrfToken;
     }
@@ -45,13 +48,16 @@ public class AuthController {
         @RequestBody LoginRequest loginRequest,
         //  "HttpServletRequest request" represents the incoming request POST /auth/login. It contains information such as its headers and cookies.
         HttpServletRequest request,
+        // response is the outgoing HTTP response to this login request. Spring gives your controller a HttpServletResponse object for it. A response can contain a status, headers, cookies, and a body.
         HttpServletResponse response
     ) {
         // check whether the username/password is correct.
         int userId = authService.authenticate(loginRequest);
 
 
-        /* 
+        /* s
+        var authentication = ...: var asks Java to infer the variable’s type. Here its type is UsernamePasswordAuthenticationToken
+
         UsernamePasswordAuthenticationToken.authenticated(userId, null, List.of()): creates an object that tells Spring Security the credentials have already been verified. userId is the user identity, null means no password is stored in this object, and List.of() is an empty list of roles or permissions. This line belongs after your password check.
 
         purpose:
@@ -65,7 +71,7 @@ public class AuthController {
 
             authenticated(...) is a static factory method that creates a UsernamePasswordAuthenticationToken whose isAuthenticated() value is true. It does not check the password. Your AuthService.authenticate(loginRequest) must do that first.
 
-        var authentication = ...: var asks Java to infer the variable’s type. Here its type is UsernamePasswordAuthenticationToken
+        
         */
         var authentication = UsernamePasswordAuthenticationToken.authenticated(
             userId,  // principal: WHO the user is
@@ -95,9 +101,43 @@ public class AuthController {
         */
         request.changeSessionId();
 
+        /*
+        before this step we have done:
+            1. userid -> 2. UsernamePasswordAuthenticationToken object(means the user is authenticated)
+        now we are doing:
+            -> 3. create a context(a container for "who is logged in") and put the 2. in it 
+            -> 4. use it by make the context available to Spring Security (the holder is where Spring Security checks for the current authentication)
+            -> 5. save it for later requests.
+        */
+        // Creates a fresh, empty SecurityContext. Think of it as a container for “who is logged in.” We create a new one so we can fill it with this login’s authentication information.
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
+        // Places the verified UsernamePasswordAuthenticationToken—containing your user ID—inside that container. Now the context says who the authenticated user is.
+        context.setAuthentication(authentication);
+        // Makes that context available to Spring Security during this HTTP request. The holder is the place Spring Security checks for the current authentication.
+        SecurityContextHolder.setContext(context);
+        // Saves the context through the repository we configured. Its session repository can load that authentication when the browser sends its session cookie with the next HTTP request. With our custom login method, setting the holder alone does not save it for later. 
+
+        /*
+        The returned userId is part of the response—specifically, its body. HttpServletResponse response represents the whole outgoing HTTP response while your method is running.
+
+        For example, after return 7, the response could look roughly like:
+
+            HTTP/1.1 200 OK
+            Set-Cookie: JSESSIONID=XYZ
+
+            7
+
+        Here, 7 is the body produced from your return value. The response parameter gives Spring and the session handling code access to the response’s headers and cookies before it is sent.
         
-
-
+        The order is:
+            1. The server creates an initially empty HttpServletResponse and passes it to your login method.
+            2. saveContext(context, request, response) runs. It receives that response object; the body does not need to exist yet.
+            3. Your method reaches return userId;.
+            4. Spring takes that returned number and writes it into the same response’s body.
+            5. The server sends the completed response to the client.
+            So passing response to saveContext does not mean the response already contains userId. It’s an object that Spring is still building.
+        */
+        securityContextRepository.saveContext(context, request, response);
         return userId;
     }
 }

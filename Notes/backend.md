@@ -888,12 +888,14 @@ Your current authenticate(...) only does step 1. Returning a user ID does not by
 There is one more check beyond “signed in”: when someone requests `/tasks/5`, our task code must verify that task 5 belongs to that user. Requiring sign-in alone would not establish ownership.
 
 # CSRF
+
 ## what CSRF token is for?
 The problem CSRF solves: your browser sends a site’s session cookie automatically. Suppose you are signed in to a website, then visit a malicious website. That second website may be able to make your browser send a request to the first website. The first website sees your cookie and could mistake the request for something you intended to do.
 
-CSRF token is an extra thing to prevent the reqeust from malicious webtsite sent on behalf of us. The real app obtained that from the backend and put it into requests that change things. The backend asks: “I see your session cookie. Did this request also include the token I expected?” If the token is missing, it rejects the change. The cookie says which session this is; the CSRF token helps check whether this change came through the intended app flow or some malicious website.
+CSRF token is an extra thing belongs to the brower's session to prevent the reqeust from malicious webtsite sent on behalf of us. The real app obtained that from the backend and put it into requests that change things. The backend asks: “I see your session cookie. Did this request also include the token I expected?” If the token is missing, it rejects the change. The cookie says which session this is; the CSRF token helps check whether this change came through the intended app flow or some malicious website.
 
-In your app, the CSRF protection is turned on  when you added Spring Security and started using its SecurityFilterChain. Spring Security enables CSRF protection by default.
+## When does the csrf protection is turened on?
+In your app, the CSRF protection is turned on  when you added Spring Security and started using its `SecurityFilterChain`. Spring Security enables CSRF protection by default. With your SecurityFilterChain, CSRF protection is on by default unless you disable it.
 
 For your Todo app:
 - `GET /tasks` reads tasks, so no CSRF token is needed. It still requires sign-in.
@@ -908,6 +910,13 @@ So the requests differ at the important point:
 Your app:       session cookie + correct CSRF token → accepted
 Malicious site: session cookie + no correct token   → rejected
 ```
+
+## Does the csrf get refreshed everytime a user relogin?
+When you open the app again, the frontend can call `GET /auth/csrf` first. That gives it a token for the current session, whether the browser has kept an existing session or started a new one. It then sends that token with POST /auth/login.
+After a successful login, once we add CSRF token clearing to your custom login, the frontend calls GET /auth/csrf again to get a token for later requests. The sequence is:
+`open app → get current CSRF token → log in → get post-login CSRF token` (a second call to GET /auth/csrf is not required by the code you have today)
+
+Yes—after each successful login, the usual Spring Security flow clears the old CSRF token. The frontend then gets a fresh token, for example with GET /auth/csrf, before its next POST, PATCH, PUT, or DELETE request. It does not need a new token for every request, and a failed login does not count as a successful login.
 
 
 # Spring MVC vs CSRF token 
@@ -929,8 +938,21 @@ For example, if `POST /auth/register` fails, Spring may internally route that sa
 Think of it in two parts:
 1. Server: Keeps a session, such as session ABC, containing data for that browser.
 2. Browser: Keeps a cookie containing the session ID, such as JSESSIONID=ABC. It sends that cookie with later requests.
-After we implement login, HttpSessionSecurityContextRepository can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
+
+- After we implement login, `HttpSessionSecurityContextRepository` can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
 In your app, AuthService.authenticate() currently checks the password, but we have not yet saved the login information to the session. That is the next coding step.
 
+# HttpSessionCsrfTokenRepository
+The repository is an object that knows where CSRF tokens are stored. It is not a CSRF token.
+Right now, Spring Security creates its own repository(`HttpSessionCsrfTokenRepository`) internally by default. It uses that repository to check the token on `POST /auth/login`. But your custom login method also needs a repository(`HttpSessionCsrfTokenRepository`) so it can remove the token after login succeeds.
 
-# 
+| Code | What it does |
+|---|---|
+| `@Bean CsrfTokenRepository ...` | Creates a repository object that Spring can give to other parts of our code. |
+| `http.csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))` | Tells Spring Security’s CSRF checker to use that object. |
+
+Then the login controller can receive that same object and use it to clear the token. The flow is:
+1. The repository stores token A in this visitor’s session.
+2. Spring’s CSRF checker( the checker is made internally in Sping Security by default not made by us manually) uses the repository to verify token A on login.
+3. Login succeeds. Our controller uses the repository to remove token A.
+4. A later GET /auth/csrf causes a new underlying token to be stored.

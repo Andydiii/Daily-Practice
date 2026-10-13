@@ -56,4 +56,11 @@ public class SecurityConfig {
     // new RequestAttributeSecurityContextRepository(): Keeps the security context available during the current HTTP request, including an error dispatch within that request.
     // new HttpSessionSecurityContextRepository(): Stores the security context in the user’s server-side HTTP session, so it can be loaded on a later request.
     // A server-side HTTP session is a place on the backend that holds data for one browser’s ongoing visit. Server: Keeps a session, such as session ABC, containing data for that browser.
+
+    @Bean
+    // CsrfTokenRepository is the interface for storing and retrieving CSRF tokens.
+    CsrfTokenRepository csrfTokenRepository() {
+
+    }
+
 }
