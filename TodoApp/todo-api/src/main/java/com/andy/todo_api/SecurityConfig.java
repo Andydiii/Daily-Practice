@@ -13,7 +13,8 @@ import org.springframework.security.web.context.RequestAttributeSecurityContextR
 import org.springframework.security.web.context.SecurityContextRepository;
 
 import jakarta.servlet.DispatcherType;
-
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 
 // this class is registered as bean by annotation @Configuration
 @Configuration 
@@ -23,7 +24,11 @@ public class SecurityConfig {
     // The method returns a SecurityFilterChain object. @Bean tells Spring to keep that returned object and use it as part of the application.
     // In your app, the CSRF protection is turned on  when you added Spring Security and register your own SecurityFilterChain. Spring Security enables CSRF protection by default.
     @Bean 
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, CsrfTokenRepository csrfTokenRepository) throws Exception {
+        http.csrf((csrf) -> {
+            csrf.csrfTokenRepository(csrfTokenRepository);
+        });
+
         http.authorizeHttpRequests((auth) -> {
             // This allows matched requests without an authenticated user.
             // Spring Security recommends permitting ERROR dispatches so Spring Boot can return the actual error response. This does not make normal /tasks requests public.
@@ -60,7 +65,8 @@ public class SecurityConfig {
     @Bean
     // CsrfTokenRepository is the interface for storing and retrieving CSRF tokens.
     CsrfTokenRepository csrfTokenRepository() {
-
+        // HttpSessionCsrfTokenRepository stores each token in its own HTTP session. Making the repository a bean does not give every user the same token
+        return new HttpSessionCsrfTokenRepository();
     }
 
 }

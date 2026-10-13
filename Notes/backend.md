@@ -918,6 +918,18 @@ After a successful login, once we add CSRF token clearing to your custom login, 
 
 Yes—after each successful login, the usual Spring Security flow clears the old CSRF token. The frontend then gets a fresh token, for example with GET /auth/csrf, before its next POST, PATCH, PUT, or DELETE request. It does not need a new token for every request, and a failed login does not count as a successful login.
 
+## Why replace the token after login? 
+Login changes the session from anonymous to authenticated. Clearing the pre-login token means that a token obtained before that change cannot be reused to make requests as the signed-in user. Spring’s normal authentication flow clears it; a new token is generated when the client next asks for one. In our custom login, we still need to add that clearing step.
+
+“Anonymous” means the server has a session for this visitor, but the session does not yet say who the visitor is. That session can already contain a CSRF token so the visitor can send the login POST.
+
+After a successful login, your code saves a SecurityContext containing the authenticated user ID into the session. On later requests, Spring loads it and knows which user is making the request. That is what I mean by the session becoming authenticated. Your code also changes its JSESSIONID, but it remains the visitor’s continuing session.
+
+We don’t strictly have to change the CSRF token for login to work—your current app demonstrates that. Spring’s normal login flow clears it as a security precaution at this change in access:
+
+1. Before login: session has token T, but cannot access protected tasks.
+2. After login: session can access that user’s protected tasks.
+3. Clearing T ensures anyone who somehow learned the pre-login token cannot reuse it after the session gains that access. The client gets a new token for subsequent changes.
 
 # Spring MVC vs CSRF token 
 ```markdown
@@ -942,6 +954,9 @@ Think of it in two parts:
 - After we implement login, `HttpSessionSecurityContextRepository` can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
 In your app, AuthService.authenticate() currently checks the password, but we have not yet saved the login information to the session. That is the next coding step.
 
+## what happens to in-memory session stored in badckend when backend stops?
+With your current default, in-memory session setup, the sessions are lost when the backend stops. The browser or Postman might still send an old JSESSIONID, but the restarted server cannot find that session, so the user is not still logged in. Spring Boot does not persist servlet sessions between restarts by default.
+
 # HttpSessionCsrfTokenRepository
 The repository is an object that knows where CSRF tokens are stored. It is not a CSRF token.
 Right now, Spring Security creates its own repository(`HttpSessionCsrfTokenRepository`) internally by default. It uses that repository to check the token on `POST /auth/login`. But your custom login method also needs a repository(`HttpSessionCsrfTokenRepository`) so it can remove the token after login succeeds.
@@ -956,3 +971,35 @@ Then the login controller can receive that same object and use it to clear the t
 2. Spring’s CSRF checker( the checker is made internally in Sping Security by default not made by us manually) uses the repository to verify token A on login.
 3. Login succeeds. Our controller uses the repository to remove token A.
 4. A later GET /auth/csrf causes a new underlying token to be stored.
+
+# login/authentication flow
+## First visit: the browser has no session cookie
+1. React starts running in the browser at http://localhost:5173.
+2. React calls fetch("http://localhost:8080/auth/csrf", { credentials: "include" }). We still need to write this startup call in React. Opening the page does not call /auth/csrf automatically.
+3. The browser checks its cookies for localhost. On this first visit, the browser has no JSESSIONID, so the browser sends the `GET /auth/csrf` request without that cookie.
+4. Spring Security generates a token and creates a new HTTP session to store the expected token. Spring’s session-based CSRF repository stores the expected token in the HTTP session.
+5. The backend returns the token information in the response body and sends cookie C1 through a Set-Cookie response header.
+6. The browser stores C1. React reads the token from the response body and stores the value as Token A. React does not read C1 or copy C1 into a request header. credentials: "include" allows the browser to accept the cookie and send the cookie on later cross-origin requests. MDN
+At this point, S1 is an anonymous session. The user has a session and a CSRF token, but the user is not logged in.
+
+## Login
+7. The user enters an email and password and clicks Login.
+8. React calls POST /auth/login. React supplies the JSON email and password, adds Token A in the X-CSRF-TOKEN header, and sets credentials: "include".
+9. The browser attaches cookie C1 to the login request. The browser attaches C1 because of credentials: "include"; React does not construct the Cookie header.
+10. Spring Security uses C1 to find S1 and checks the submitted CSRF token against the expected token stored in S1.
+11. Your login code checks the email and password. If the credentials are valid, your login code records the authenticated user in the security context, saves that context for later requests, and changes the session ID. The response provides cookie C2, which identifies the session under its new ID.
+12. The browser stores C2. Subsequent requests use C2. React should stop using Token A if your login code has also performed the CSRF-clearing step we discussed. Changing the session ID alone does not mean React has already received a new CSRF token.
+13. React calls GET /auth/csrf again with credentials: "include".
+14. The browser attaches C2. Spring Security finds the now-authenticated session and supplies a CSRF token for that session. React stores the returned value as Token B. This is the step where the frontend obtains the post-login token; login itself did not hand Token B to React. Spring recommends retrieving a token after authentication for this API style. docs.spring.io
+15. React calls GET /tasks with credentials: "include". The browser attaches C2. Spring Security finds the authenticated user through the session. The task controller returns tasks, and React displays them. GET /tasks does not require a CSRF header.
+
+## Returning visit: the browser already has a valid logged-in session
+1. React starts and calls `GET /auth/csrf` with credentials: "include".
+2. The browser sends its existing cookie that contains JSESSIONID.
+3. Spring Security finds the existing authenticated session and provides a CSRF token for that session.
+4. React stores the returned token.
+5. React calls `GET /tasks` with credentials: "include".
+6. The backend accepts the authenticated session and returns the user’s tasks. The user does not need to log in again.
+If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+

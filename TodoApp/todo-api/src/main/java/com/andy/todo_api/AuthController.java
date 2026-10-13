@@ -24,10 +24,16 @@ public class AuthController {
     private final AuthService authService;
     // declares a field for the repository that saves and retrieves login information.
     private final SecurityContextRepository securityContextRepository;
+    private final CsrfTokenRepository csrfTokenRepository;
 
-    public AuthController(AuthService authService, SecurityContextRepository SecurityContextRepository) {
+    public AuthController(
+        AuthService authService, 
+        SecurityContextRepository securityContextRepository, 
+        CsrfTokenRepository csrfTokenRepository
+    ) {
         this.authService = authService;
-        this.securityContextRepository = SecurityContextRepository;
+        this.securityContextRepository = securityContextRepository;
+        this.csrfTokenRepository = csrfTokenRepository;
     }
 
     @PostMapping("/auth/register")
@@ -101,6 +107,16 @@ public class AuthController {
         */
         request.changeSessionId();
 
+        // new CsrfAuthenticationStrategy(csrfTokenRepository) creates a strategy object. The constructor gives it the repository that knows how to read and remove CSRF tokens from HTTP sessions.
+        /*
+        The important operation is inside onAuthentication. In simplified form, it does this:
+            if (csrfTokenRepository.loadToken(request) != null) {
+                csrfTokenRepository.saveToken(null, request, response);
+            }
+        For saveToken, passing null means delete the stored token. The strategy also prepares deferred loading so Spring can create a replacement when needed. It does not delete the session or the user’s login information
+        */
+        new CsrfAuthenticationStrategy(csrfTokenRepository).onAuthentication(authentication, request, response);
+
         /*
         before this step we have done:
             1. userid -> 2. UsernamePasswordAuthenticationToken object(means the user is authenticated)
@@ -118,7 +134,7 @@ public class AuthController {
         // Saves the context through the repository we configured. Its session repository can load that authentication when the browser sends its session cookie with the next HTTP request. With our custom login method, setting the holder alone does not save it for later. 
 
         /*
-        The returned userId is part of the response—specifically, its body. HttpServletResponse response represents the whole outgoing HTTP response while your method is running.
+        "HttpServletResponse response" represents the whole outgoing HTTP response while your method is running.
 
         For example, after return 7, the response could look roughly like:
 
@@ -141,3 +157,4 @@ public class AuthController {
         return userId;
     }
 }
+ 

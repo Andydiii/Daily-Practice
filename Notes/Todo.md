@@ -146,7 +146,8 @@ Aug 29
 - [X] Inform Eric to review at 4pm
 - [X] booked car on Friday
 - [X] equipments
-- [ ] clear the pre-login CSRF token after a successful login.
+- [X] clear the pre-login CSRF token after a successful login.
+- [ ] 
 - [ ] full stack dev
 - [ ] Solve one Java interview problem from our Grind 75 track.
 - [ ] Solve one SQL problem.
