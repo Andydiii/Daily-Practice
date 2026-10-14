@@ -146,11 +146,12 @@ Aug 29
 - [X] Inform Eric to review at 4pm
 - [X] booked car on Friday
 - [X] equipments
-- [X] clear the pre-login CSRF token after a successful login.
-- [ ] 
-- [ ] full stack dev
+- [X] clear the pre-login CSRF token after a successful login. 
+- [X] full stack dev
+- [X] work
+- [X] apply for jobs
+- [ ] brandon project run 
 - [ ] Solve one Java interview problem from our Grind 75 track.
 - [ ] Solve one SQL problem.
 - [ ] Review the authentication flow as a short system-design exercise.
-- [ ] Spend 30 minutes on job applications.
-- [ ] brandon project run
+- [X] Spend 30 minutes on job applications.

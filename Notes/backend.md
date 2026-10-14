@@ -112,6 +112,11 @@ If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares t
 
 # Java Data Structure
 
+## Character:
+Comparison: `c1 < c2`
+Letters or numbers: `Character.isLetterOrDigit(c1)`
+tolowercase: `Character.toLowerCase(c1)`;
+
 ## Set
 ```java
 Set<Integer> numbers = new HashSet<>();
@@ -186,6 +191,8 @@ length: `array.length`;
 import: `import java.util.Scanner;`
 Init scanner: `Scanner scanner = new Scanner(System.in);`
 Read a line from user: `String title = scanner.nextLine();`
+read a int: `int age = scanner.nextInt();`
+read a word: `next()`
 
 ## String
 **type**: must declare as `String` not `string`, there is no `string`
@@ -973,6 +980,12 @@ Then the login controller can receive that same object and use it to clear the t
 4. A later GET /auth/csrf causes a new underlying token to be stored.
 
 # login/authentication flow
+Session S1: the server’s session before login
+Cookie C1: JSESSIONID identifying S1
+Token A: the CSRF token associated with S1 before login
+Cookie C2: the new JSESSIONID after successful login
+Token B: the CSRF token obtained after login
+
 ## First visit: the browser has no session cookie
 1. React starts running in the browser at http://localhost:5173.
 2. React calls fetch("http://localhost:8080/auth/csrf", { credentials: "include" }). We still need to write this startup call in React. Opening the page does not call /auth/csrf automatically.
