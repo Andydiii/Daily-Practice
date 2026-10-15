@@ -1,6 +1,8 @@
 package com.andy.todo_api;
 
 
+import org.springframework.security.config.Customizer;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -25,6 +27,16 @@ public class SecurityConfig {
     // In your app, the CSRF protection is turned on  when you added Spring Security and register your own SecurityFilterChain. Spring Security enables CSRF protection by default.
     @Bean 
     SecurityFilterChain securityFilterChain(HttpSecurity http, CsrfTokenRepository csrfTokenRepository) throws Exception {
+        // tells Spring Security to use those rules before its authentication checks.
+        /*
+        For example, before a cross-origin DELETE, the browser may send OPTIONS /tasks/1 to check permission. That OPTIONS request has no session cookie. Without Security’s CORS handling, Security could reject it as unauthenticated before the request reaches the controller, so the controller’s @CrossOrigin rule never gets a chance to handle it.
+With http.cors(...), Security handles that preflight using your CORS configuration. If allowed, the browser can then send the actual DELETE with its cookie and CSRF token.
+        */
+        http.cors(Customizer.withDefaults());
+
+        /*
+        sets the repository Spring Security will use to generate, save, load, and remove the expected CSRF token. In your setup, that repository stores the token in the server-side HTTP session. This line configures future requests; it does not generate a token immediately at startup.
+        */
         http.csrf((csrf) -> {
             csrf.csrfTokenRepository(csrfTokenRepository);
         });

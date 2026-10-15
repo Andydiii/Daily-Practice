@@ -85,6 +85,15 @@ the backend must verify the authentication token or session.
 
 After identifying user B, the backend loads task 7, compares its owner with B, and updates it only if they match. Otherwise it returns an error such as `403` Forbidden or `404` Not Found, without changing the database. We’d apply the same ownership check to delete and completion requests.
 
+## When a signed-in user sends DELETE /tasks/{id}, how should the backend determine who sent the request and check whether they own that task before deleting it? Try explaining the steps in your own words; we’ll review your answer together.
+when signed-in user send the request, the request inlcudes the cookie that contains the session ID. Spring use that session ID to load the server-side session and its saved authentication(it is saved by `securityContextRepository`), which identifies the user. Because `Delete` changes data, the request also requires a valid CSRF token. A missing or invalid token can stop the request before your ownership code runs. Spring looks up the task table by task ID, and see if its owner matches the authenticated user's ID. Delete only if they match.
+
+If the task is missing then return `404 Not Found`, if the task does not belong to the user then return `403 Forbidden`.
+
+Note: `securityContextRepository.saveContext(context, request, response);`: the session repository saves that context in the server-side HTTP session. On a later request, the browser sends its JSESSIONID cookie; Spring finds the session and loads the saved context, including the authenticated user ID.
+
+session repository: it is the `HttpSessionSecurityContextRepository` inside your `DelegatingSecurityContextRepository`. When you call `saveContext(...)`, the delegating repository passes the context to its repositories. `HttpSessionSecurityContextRepository` is the part that saves it in the server-side HTTP session so Spring can load it on a later request.
+
 # Design Todo Database Tabel
 
 **We want to store tasks in a database. Each task has an id, a title, and a completed status. Which field would you choose as the primary key, and why would you choose it instead of title?** \
@@ -121,6 +130,7 @@ frontend sends HTTP POST request with body includes the title only to backend. b
 PostgreSQL handles the concurrent inserts and give each one a distinct id. It does not need to finish one request before the other request. 
 
 with nextid in controller, concurrent inserts may could lead to reading the same nextId before either increments and thus two tasks with same id occured.
+
 
 
 

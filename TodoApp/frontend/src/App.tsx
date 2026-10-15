@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TaskCard from './TaskCard'
 import './App.css'
 
@@ -22,6 +22,8 @@ function App() {
   const [creating, setCreating] = useState(false);
   // disable complete button when completing a task
   const [completing, setCompleting] = useState(false);
+
+  const [csrfToken, setCsrfToken] = useState('');
 
   async function loadTasks() {
     setErrorMessage('');
@@ -141,6 +143,30 @@ function App() {
         return task.id == id ? updatedTask : task;
       }));
   }
+
+  async function loadCsrfToken() {
+    try {
+      // The fetch call is not the only part that can fail
+      // fetch(...) can reject if the request cannot complete.
+      const response = await fetch("http://localhost:8080/auth/csrf", {
+        credentials: "include"
+      });
+      
+      // A 404 or 500 response does not make fetch throw. Our if (!response.ok) throw ... handles that case
+      if (!response.ok) {
+        throw new Error("Could not load the csrf Token");
+      }
+      const data : { token: string } = await response.json();
+      setCsrfToken(data.token);
+    } catch (error) {
+      setErrorMessage("Could not load the csrf token");
+    }
+  }
+
+  // run only once when App component gets rendered.
+  useEffect(() => {
+    loadCsrfToken();
+  }, [])
 
   return (
     <>

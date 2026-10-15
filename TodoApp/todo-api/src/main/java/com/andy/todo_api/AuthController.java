@@ -17,9 +17,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.security.web.csrf.CsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 
-@RestController 
+// add a header (Access-Control-Allow-Credentials: true) in response tells browser that origin = "http://localhost:5173" can read the response, and not block that frontend reading the response. 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
+@RestController
 public class AuthController {
     private final AuthService authService;
     // declares a field for the repository that saves and retrieves login information.
