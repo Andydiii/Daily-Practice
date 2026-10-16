@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import TaskCard from './TaskCard'
 import './App.css'
 
@@ -24,6 +24,8 @@ function App() {
   const [completing, setCompleting] = useState(false);
 
   const [csrfToken, setCsrfToken] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
   async function loadTasks() {
     setErrorMessage('');
@@ -163,14 +165,55 @@ function App() {
     }
   }
 
-  // run only once when App component gets rendered.
+  async function handleLogin() {
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({email, password}),
+      });
+
+      if (!response.ok) {
+        throw new Error("failed to login");
+      }
+
+    } catch (error) {
+      setErrorMessage("unable to login");
+    }
+  }
+
+  // it runs after App mounts, and React Strict Mode may run it twice in development, as you saw earlier
   useEffect(() => {
     loadCsrfToken();
   }, [])
 
   return (
     <>
-      <label htmlFor="task-title">New Task Title</label>
+      <label htmlFor="email">email</label>
+      <input 
+        id="email" 
+        type="email" 
+        placeholder='Enter an Email' 
+        value={email} 
+        onChange={(event) => setEmail(event.target.value)}
+      />
+      <label htmlFor="password">Password</label>
+      <input 
+        id="password" 
+        type="password" 
+        placeholder='Enter a password' 
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
+      <button type="button" onClick={handleLogin} disabled={!csrfToken}>
+        login
+      </button>
+
+      <label htmlFor="task-title">New task title</label>      
       <input
         id="task-title"
         type="text"

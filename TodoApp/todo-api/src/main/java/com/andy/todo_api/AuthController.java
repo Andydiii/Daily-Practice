@@ -114,11 +114,13 @@ public class AuthController {
 
         // new CsrfAuthenticationStrategy(csrfTokenRepository) creates a strategy object. The constructor gives it the repository that knows how to read and remove CSRF tokens from HTTP sessions.
         /*
-        The important operation is inside onAuthentication. In simplified form, it does this:
-            if (csrfTokenRepository.loadToken(request) != null) {
-                csrfTokenRepository.saveToken(null, request, response);
-            }
-        For saveToken, passing null means delete the stored token. The strategy also prepares deferred loading so Spring can create a replacement when needed. It does not delete the session or the user’s login information
+            The important operation is inside onAuthentication. In simplified form, it does this:
+                if (csrfTokenRepository.loadToken(request) != null) {
+                    csrfTokenRepository.saveToken(null, request, response);
+                }
+            For saveToken, passing null means delete the stored token. The strategy also prepares deferred loading so Spring can create a replacement when needed. It does not delete the session or the user’s login information
+
+            Only the server-side CSRF token is cleared by your login code. React’s csrfToken state does not change automatically. It still contains token A until your frontend calls setCsrfToken(...).
         */
         new CsrfAuthenticationStrategy(csrfTokenRepository).onAuthentication(authentication, request, response);
 
