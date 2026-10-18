@@ -22,7 +22,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfAuthenticationStrategy;
 
-// add a header (Access-Control-Allow-Credentials: true) in response tells browser that origin = "http://localhost:5173" can read the response, and not block that frontend reading the response. 
+// allowCredentials = "true" add a header (Access-Control-Allow-Credentials: true) in response tells browser that origin = "http://localhost:5173" can read the response, and not block that frontend reading the response.
+// in simple words: its granting the brower "A page from http://localhost:5173 may read this response even when its fetch is configured to include credentials." 
 @CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 @RestController
 public class AuthController {

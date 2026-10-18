@@ -570,6 +570,10 @@ the backend returned the tasks, but its response was missing Access-Control-Allo
 
 For a request that needs a preflight, the browser checks permission first with OPTIONS. If credentialed access is not permitted there, it does not send the actual request.
 
+in simple words, wihtout the line, `OPTIONS /auth/login` would otherwise reach `.anyRequest().authenticated()` which requires the reuqest to be authenticated, but a preflight has no session cookie thus not authenticated, so it could be rejected. the reason we need the `http.cors(Customizer.withDefaults())`  is to let the option bypass the authentication rule so it wont be rejected due to authentication issue. and then it will be answered by response headers: what headers it can contain, can it contain cookie or not, what methods the request can have.
+
+
+
 **Why add @CrossOrigin? `@CrossOrigin(origins = "http://localhost:5173")`**
 
 by adding `@CrossOrigin(origins = "http://localhost:5173")` to backend springboot, springboot will add the CORS header to response header automatically then the browser wont block the react app to read the response.

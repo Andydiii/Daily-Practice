@@ -1,4 +1,4 @@
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import TaskCard from './TaskCard'
 import './App.css'
 
@@ -165,7 +165,11 @@ function App() {
     }
   }
 
+/*
+Only the server-side CSRF token is cleared by your login code. React’s csrfToken state does not change automatically. It still contains token A until your frontend calls setCsrfToken(...).
+*/
   async function handleLogin() {
+    setErrorMessage('');
     try {
       const response = await fetch("http://localhost:8080/auth/login", {
         method: "POST",
