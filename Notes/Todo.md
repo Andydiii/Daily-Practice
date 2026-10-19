@@ -143,11 +143,23 @@ Aug 29
 - [X] Applications: Spend 30 minutes on relevant new-grad roles.
 
 10.6
-- [ ] Inform Eric to review at 4pm
+- [X] Inform Eric to review at 4pm
 - [X] booked car on Friday
-- [ ] equipments
-- [ ] full stack dev
-- [ ] Solve one Java interview problem from our Grind 75 track.
-- [ ] Solve one SQL problem.
-- [ ] Review the authentication flow as a short system-design exercise.
-- [ ] Spend 30 minutes on job applications.
+- [X] equipments
+- [X] clear the pre-login CSRF token after a successful login. 
+- [X] full stack dev
+- [X] work
+- [X] apply for jobs
+- [ ] brandon project run 
+- [X] Solve one Java interview problem from our Grind 75 track.
+- [X] Solve one SQL problem.
+- [X] Review the authentication flow as a short system-design exercise.
+- [X] Spend 30 minutes on job applications.
+
+10.14
+- [ ] Full stack: let React call `/auth/csrf` with session cookies across ports 5173 and 8080.
+- [ ] Java LeetCode: one interview practice problem.
+- [ ] SQL: one short query.
+- [ ] Review: trace what happens from login to an authenticated task request.
+- [X] Applications for jobs
+- [ ] brandon app run  

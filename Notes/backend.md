@@ -90,10 +90,32 @@ try {
 }
 ```
 
+- `throws Exception`: means “if an error occurs inside this method, I’m allowing it to go back to the code that called this method.” It does not create an exception by itself.
+```java
+void makeDinner() throws Exception {
+    cookRice(); // imagine cookRice() might throw an Exception
+}
 
+void start() {
+    try {
+        makeDinner();
+    } catch (Exception error) {
+        System.out.println("Dinner could not be made");
+    }
+}
+```
+If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares throws Exception, the exception travels back to `start()`, its caller. Then `start()` can catch it.
 
+- key difference between `throws Exception` and `throw new Exception(...)`:
+`throws Exception` in the method signature: this method may pass an exception to its caller.
+`throw new Exception(...)` inside the body: create and throw an exception right now.
 
 # Java Data Structure
+
+## Character:
+Comparison: `c1 < c2`
+Letters or numbers: `Character.isLetterOrDigit(c1)`
+tolowercase: `Character.toLowerCase(c1)`;
 
 ## Set
 ```java
@@ -169,6 +191,8 @@ length: `array.length`;
 import: `import java.util.Scanner;`
 Init scanner: `Scanner scanner = new Scanner(System.in);`
 Read a line from user: `String title = scanner.nextLine();`
+read a int: `int age = scanner.nextInt();`
+read a word: `next()`
 
 ## String
 **type**: must declare as `String` not `string`, there is no `string`
@@ -348,8 +372,8 @@ public class PasswordConfig {
     }
 }
 ```
-1. spring only created the objects that are bean when it startups. `A: Spring does not create only beans. It creates and manages beans, but other objects also exist in the app. For example, your code creates a Task with new Task(...), and JPA creates Task objects when loading database rows. Those Task objects are not Spring beans.`
-2. for this specific class marked as @configuration, springt mark it bean class, call its ctor, and found the @bean method, so called it immediately after spring called ctor of the bean class? and treat the object returned by this method as another bean? `Yes, both objects are beans in this example. Spring discovers @Configuration, manages a PasswordConfig object, and records that its @Bean method can provide a PasswordEncoder. Spring calls that method when it creates the encoder bean. It isn’t necessarily called immediately after the PasswordConfig constructor; Spring controls the startup order based on dependencies. By default, these shared beans are created during startup`
+1. spring only created the objects that are bean when it startups? `A: Spring does not create only beans. It creates and manages beans, but other objects also exist in the app. For example, your code creates a Task with new Task(...), and JPA creates Task objects when loading database rows. Those Task objects are not Spring beans.`
+2. for this specific class marked as @configuration, springt mark it bean class, call its ctor, and found the @bean method, so called it immediately after spring called ctor of the bean class? and treat the object returned by this method as another bean? `Yes, both objects are beans in this example. Spring discovers @Configuration, manages a PasswordConfig object, and records that its @Bean method can provide a PasswordEncoder. @Bean tells Spring to keep that returned object and use it as part of the application. Spring calls that method when it creates the encoder bean. It isn’t necessarily called immediately after the PasswordConfig constructor; Spring controls the startup order based on dependencies. By default, these shared beans are created during startup`
 3. in my understanding, bean is a object that will be created when app startup, other tyhan this, what is bean for?  `The main benefit of a bean is that Spring can give it to classes that need it. For example, we can later write a registration class like this:`
 4. Is there a reason we want to make `passwordEncoder` a bean? 
 ```
@@ -394,6 +418,7 @@ You’ve already used this idea with `TaskRepository`: your controller asks for 
 | `@Bean` on `passwordEncoder()` | Calls the method and keeps its returned object |
 | `TaskRepository extends JpaRepository` | Spring Data creates a repository implementation for TaskRepository |
 
+### 
 
 
 ### When Backend starts: Spring creates and manages object for class registered as beans.
@@ -428,7 +453,8 @@ Spring sees the constructor needs a PasswordEncoder and supplies the one created
 `204 No Content` - request was successful, but no data sent back in the response body (common after deleting an item).
 - code `4xx` means client-side issue:
 `400 Bad Request` - The server cannot process the request because of malformed syntax or a client-side error.
-`401 Unauthorized` - 
+`401 Unauthorized`
+`403 Forbidden` - e.g. Todo backend is responding and its security rule is taking effect if someone sending request `GET /tasks` without login 
 `404 Not Found` - The server cannot find the requested URL or resource.
 `409 Conflict` - describes something already registered.
 - code `5xx` means the website's server encountered an error and could not fulfill a valid request from the client
@@ -530,11 +556,23 @@ public Comment getComment(
 
 
 ## CROS problem: CORS(Cross-Origin Resource Sharing) error when loading tasks 
+### Access-Control-Allow-Origin
 While connecting my React Todo app to a Spring Boot backend, I encountered a CORS(Cross-Origin Resource Sharing) error when loading tasks. I checked the browser console and saw that the backend returned 200 OK, but the browser blocked the frontend from reading the response. The frontend and backend used different ports, so they were different origins. With guidance, I added `@CrossOrigin` to allow my frontend’s origin and restarted the backend. I verified that the tasks loaded successfully, then tested error handling by stopping the backend and confirming that loading worked again after restarting it.
 
 An origin consists of protocol + hostname + port. Your frontend (http://localhost:5173) and backend (http://localhost:8080) have different ports, so they are different origins.
 
 the backend returned the tasks, but its response was missing Access-Control-Allow-Origin. Therefore, the browser blocked your React code from reading the response.
+
+### Access-control-allow-crendentails
+- If the request is set to have `crendentials: "include"`, then browser will send the request with cookie if any. Then if backend only has `@CrossOrigin(origins = "http://localhost:5173")` instead of `@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")`, then the backend will send a response back to the browser, but the react wont be able to raad it and bloked by brower. 
+- so the setting is to tell browser what to do. e.g. react tell the browser to include cookie if any. e.g. Spring tells the browser the setting and browser block it or allow it.
+- `http.cors(Customizer.withDefaults())` tells Spring Security to use those rules before its authentication checks. For example, before a cross-origin `DELETE`, the browser may send `OPTIONS /tasks/1` to check permission. That `OPTIONS` request has no session cookie. Without Security’s CORS handling, Security could reject it as unauthenticated before the request reaches the controller, so the controller’s @CrossOrigin rule never gets a chance to handle it. With `http.cors(...)`, Security handles that preflight using your CORS configuration. If allowed, the browser can then send the actual `DELETE` with its cookie and CSRF token
+
+For a request that needs a preflight, the browser checks permission first with OPTIONS. If credentialed access is not permitted there, it does not send the actual request.
+
+in simple words, wihtout the line, `OPTIONS /auth/login` would otherwise reach `.anyRequest().authenticated()` which requires the reuqest to be authenticated, but a preflight has no session cookie thus not authenticated, so it could be rejected. the reason we need the `http.cors(Customizer.withDefaults())`  is to let the option bypass the authentication rule so it wont be rejected due to authentication issue. and then it will be answered by response headers: what headers it can contain, can it contain cookie or not, what methods the request can have.
+
+
 
 **Why add @CrossOrigin? `@CrossOrigin(origins = "http://localhost:5173")`**
 
@@ -850,3 +888,143 @@ public ... register(RegisterUserRequest request) {
     // validate, check email, encode password, save user
 }
 ```
+
+# spring-security-crypto
+`spring-security-crypto` gives you `PasswordEncoder` for hashing a password during registration and checking it during login
+
+# dependency spring-boot-starter-security:
+Spring Security puts a filter in front of your controllers. Each HTTP request passes through that filter before Spring calls `TaskController` or `AuthController`. The filter can identify the user and apply rules we configure, such as “`/auth/register` is public” and “`/tasks` requires sign-in.”
+
+or the session-based login we’re building, the flow will be:
+```markdown
+1. Login: The user sends an email and password. Your `AuthService.authenticate(...)` checks them against PostgreSQL.
+2. Remember the login: On success, we must tell Spring Security who was authenticated and save that information in a server-side session. The response gives the browser a session cookie.
+3. Later `GET /tasks`: The browser sends the cookie. Spring Security finds the session, identifies the user, and checks whether the request is allowed. If allowed, the request reaches `TaskController`; otherwise, it is stopped first. 
+```
+
+Your current authenticate(...) only does step 1. Returning a user ID does not by itself create a session or protect an endpoint. That is the connection we’ll implement next.
+
+There is one more check beyond “signed in”: when someone requests `/tasks/5`, our task code must verify that task 5 belongs to that user. Requiring sign-in alone would not establish ownership.
+
+# CSRF
+
+## what CSRF token is for?
+The problem CSRF solves: your browser sends a site’s session cookie automatically. Suppose you are signed in to a website, then visit a malicious website. That second website may be able to make your browser send a request to the first website. The first website sees your cookie and could mistake the request for something you intended to do.
+
+CSRF token is an extra thing belongs to the brower's session to prevent the reqeust from malicious webtsite sent on behalf of us. The real app obtained that from the backend and put it into requests that change things. The backend asks: “I see your session cookie. Did this request also include the token I expected?” If the token is missing, it rejects the change. The cookie says which session this is; the CSRF token helps check whether this change came through the intended app flow or some malicious website.
+
+## When does the csrf protection is turened on?
+In your app, the CSRF protection is turned on  when you added Spring Security and started using its `SecurityFilterChain`. Spring Security enables CSRF protection by default. With your SecurityFilterChain, CSRF protection is on by default unless you disable it.
+
+For your Todo app:
+- `GET /tasks` reads tasks, so no CSRF token is needed. It still requires sign-in.
+- `POST /tasks` creates a task, so Spring requires a CSRF token in addition to sign-in session
+- `POST /auth/login` changes the browser’s sign-in state, so Spring requires CSRF token there too. 
+
+## why the malicious site cannot read the token and add the token into the post request?
+Your React app runs at http://localhost:5173. Its code can call your permitted backend endpoint, read the CSRF token from the response, and add it to POST /tasks. The malicious site runs at a different origin. It may be able to cause the browser to send a request with your Todo cookie, but it cannot normally read the token response intended for your app. Browser origin rules prevent its code from reading that response unless the backend allows its origin.
+
+So the requests differ at the important point:
+```markdown
+Your app:       session cookie + correct CSRF token → accepted
+Malicious site: session cookie + no correct token   → rejected
+```
+
+## Does the csrf get refreshed everytime a user relogin?
+When you open the app again, the frontend can call `GET /auth/csrf` first. That gives it a token for the current session, whether the browser has kept an existing session or started a new one. It then sends that token with POST /auth/login.
+After a successful login, once we add CSRF token clearing to your custom login, the frontend calls GET /auth/csrf again to get a token for later requests. The sequence is:
+`open app → get current CSRF token → log in → get post-login CSRF token` (a second call to GET /auth/csrf is not required by the code you have today)
+
+Yes—after each successful login, the usual Spring Security flow clears the old CSRF token. The frontend then gets a fresh token, for example with GET /auth/csrf, before its next POST, PATCH, PUT, or DELETE request. It does not need a new token for every request, and a failed login does not count as a successful login.
+
+## Why replace the token after login? 
+Login changes the session from anonymous to authenticated. Clearing the pre-login token means that a token obtained before that change cannot be reused to make requests as the signed-in user. Spring’s normal authentication flow clears it; a new token is generated when the client next asks for one. In our custom login, we still need to add that clearing step.
+
+“Anonymous” means the server has a session for this visitor, but the session does not yet say who the visitor is. That session can already contain a CSRF token so the visitor can send the login POST.
+
+After a successful login, your code saves a SecurityContext containing the authenticated user ID into the session. On later requests, Spring loads it and knows which user is making the request. That is what I mean by the session becoming authenticated. Your code also changes its JSESSIONID, but it remains the visitor’s continuing session.
+
+We don’t strictly have to change the CSRF token for login to work—your current app demonstrates that. Spring’s normal login flow clears it as a security precaution at this change in access:
+
+1. Before login: session has token T, but cannot access protected tasks.
+2. After login: session can access that user’s protected tasks.
+3. Clearing T ensures anyone who somehow learned the pre-login token cannot reuse it after the session gains that access. The client gets a new token for subsequent changes.
+
+# Spring MVC vs CSRF token 
+```markdown
+1. Postman sends POST `/auth/login`.
+2. Spring Security sees that POST needs a CSRF token. Because none was sent, it returns 403 and stops the request.
+3. The request never reaches Spring MVC, so Spring MVC never checks whether a controller mapping exists
+```
+
+# Bean:
+Tells Spring to call this method and manage the object it returns, so other Spring components can receive it through injection.
+
+# error dispatch:
+An error dispatch is when the server sends a request through its own processing steps again to produce an error response.
+For example, if `POST /auth/register` fails, Spring may internally route that same HTTP request to /error to build the response. Your browser or Postman did not send a second request.
+`RequestAttributeSecurityContextRepository` keeps the login information available during that internal error step. `HttpSessionSecurityContextRepository` handles later, separate requests.
+
+# A server-side HTTP session is a place on the backend that holds data for one browser’s ongoing visit.
+Think of it in two parts:
+1. Server: Keeps a session, such as session ABC, containing data for that browser.
+2. Browser: Keeps a cookie containing the session ID, such as JSESSIONID=ABC. It sends that cookie with later requests.
+
+- After we implement login, `HttpSessionSecurityContextRepository` can save the user’s authentication information in session ABC. On the next request, Spring uses the cookie to find that session and recognize the logged-in user. The cookie is a key to find the session; it does not contain the password. docs.spring.io
+In your app, AuthService.authenticate() currently checks the password, but we have not yet saved the login information to the session. That is the next coding step.
+
+## what happens to in-memory session stored in badckend when backend stops?
+With your current default, in-memory session setup, the sessions are lost when the backend stops. The browser or Postman might still send an old JSESSIONID, but the restarted server cannot find that session, so the user is not still logged in. Spring Boot does not persist servlet sessions between restarts by default.
+
+# HttpSessionCsrfTokenRepository
+The repository is an object that knows where CSRF tokens are stored. It is not a CSRF token.
+Right now, Spring Security creates its own repository(`HttpSessionCsrfTokenRepository`) internally by default. It uses that repository to check the token on `POST /auth/login`. But your custom login method also needs a repository(`HttpSessionCsrfTokenRepository`) so it can remove the token after login succeeds.
+
+| Code | What it does |
+|---|---|
+| `@Bean CsrfTokenRepository ...` | Creates a repository object that Spring can give to other parts of our code. |
+| `http.csrf(csrf -> csrf.csrfTokenRepository(csrfTokenRepository))` | Tells Spring Security’s CSRF checker to use that object. |
+
+Then the login controller can receive that same object and use it to clear the token. The flow is:
+1. The repository stores token A in this visitor’s session.
+2. Spring’s CSRF checker( the checker is made internally in Sping Security by default not made by us manually) uses the repository to verify token A on login.
+3. Login succeeds. Our controller uses the repository to remove token A.
+4. A later GET /auth/csrf causes a new underlying token to be stored.
+
+# login/authentication flow
+Session S1: the server’s session before login
+Cookie C1: JSESSIONID identifying S1
+Token A: the CSRF token associated with S1 before login
+Cookie C2: the new JSESSIONID after successful login
+Token B: the CSRF token obtained after login
+
+## First visit: the browser has no session cookie
+1. React starts running in the browser at http://localhost:5173.
+2. React calls fetch("http://localhost:8080/auth/csrf", { credentials: "include" }). We still need to write this startup cal l in React. Opening the page does not call /auth/csrf automatically.
+3. The browser checks its cookies for localhost. On this first visit, the browser has no JSESSIONID, so the browser sends the `GET /auth/csrf` request without that cookie.
+4. Spring Security generates a token and creates a new HTTP session to store the expected token. Spring’s session-based CSRF repository stores the expected token in the HTTP session.
+5. The backend returns the token information in the response body and sends cookie C1 through a Set-Cookie response header.
+6. The browser stores C1. React reads the token from the response body and stores the value as Token A. React does not read C1 or copy C1 into a request header. credentials: "include" allows the browser to accept the cookie and send the cookie on later cross-origin requests. MDN
+At this point, S1 is an anonymous session. The user has a session and a CSRF token, but the user is not logged in.
+
+## Login
+7. The user enters an email and password and clicks Login.
+8. React calls POST /auth/login. React supplies the JSON email and password, adds Token A in the X-CSRF-TOKEN header, and sets credentials: "include" ().
+9. The browser attaches cookie C1 to the login request. The browser attaches C1 because of credentials: "include"; React does not construct the Cookie header.
+10. Spring Security uses C1 to find S1 and checks the submitted CSRF token against the expected token stored in S1.
+11. Your login code checks the email and password. If the credentials are valid, your login code records the authenticated user in the security context, saves that context for later requests, and changes the session ID. The response provides cookie C2, which identifies the session under its new ID.
+12. The browser stores C2. Subsequent requests use C2. React should stop using Token A if your login code has also performed the CSRF-clearing step we discussed. Changing the session ID alone does not mean React has already received a new CSRF token.
+13. React calls GET /auth/csrf again with credentials: "include".
+14. The browser attaches C2. Spring Security finds the now-authenticated session and supplies a CSRF token for that session. React stores the returned value as Token B. This is the step where the frontend obtains the post-login token; login itself did not hand Token B to React. Spring recommends retrieving a token after authentication for this API style. docs.spring.io
+15. React calls GET /tasks with credentials: "include". The browser attaches C2. Spring Security finds the authenticated user through the session. The task controller returns tasks, and React displays them. GET /tasks does not require a CSRF header.
+
+## Returning visit: the browser already has a valid logged-in session
+1. React starts and calls `GET /auth/csrf` with credentials: "include".
+2. The browser sends its existing cookie that contains JSESSIONID.
+3. Spring Security finds the existing authenticated session and provides a CSRF token for that session.
+4. React stores the returned token.
+5. React calls `GET /tasks` with credentials: "include".
+6. The backend accepts the authenticated session and returns the user’s tasks. The user does not need to log in again.
+If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+

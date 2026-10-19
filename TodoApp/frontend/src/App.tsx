@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import TaskCard from './TaskCard'
 import './App.css'
 
@@ -23,13 +23,25 @@ function App() {
   // disable complete button when completing a task
   const [completing, setCompleting] = useState(false);
 
+  const [csrfToken, setCsrfToken] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  /*
+    1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
+    2. The server uses that ID to find the server-side HTTP session. Login changed the session ID and saved an authenticated SecurityContext in that session.
+    3. Spring Security loads that context. Your .anyRequest().authenticated() rule checks whether the request has an authenticated user before allowing it to reach TaskController. 
+    4. If allowed, getTasks() runs and returns its result.
+  */
   async function loadTasks() {
     setErrorMessage('');
     setLoading(true);
     try {
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
-      const response = await fetch("http://localhost:8080/tasks");
+      const response = await fetch("http://localhost:8080/tasks", {
+        credentials: "include"
+      });
 
       if (!response.ok) {
         throw new Error("Failed to load tasks");
@@ -142,9 +154,82 @@ function App() {
       }));
   }
 
+  async function loadCsrfToken() {
+    try {
+      // The fetch call is not the only part that can fail
+      // fetch(...) can reject if the request cannot complete.
+      const response = await fetch("http://localhost:8080/auth/csrf", {
+        credentials: "include"
+      });
+      
+      // A 404 or 500 response does not make fetch throw. Our if (!response.ok) throw ... handles that case
+      if (!response.ok) {
+        throw new Error("Could not load the csrf Token");
+      }
+      const data : { token: string } = await response.json();
+      setCsrfToken(data.token);
+    } catch (error) {
+      setErrorMessage("Could not load the csrf token");
+    }
+  }
+
+/*
+Only the server-side CSRF token is cleared by your login code. React’s csrfToken state does not change automatically. It still contains token A until your frontend calls setCsrfToken(...).
+*/
+  async function handleLogin() {
+    setErrorMessage('');
+    try {
+      const response = await fetch("http://localhost:8080/auth/login", {
+        method: "POST",
+        headers: {
+          'X-CSRF-TOKEN': csrfToken,
+          "Content-Type": "application/json"
+        },
+        credentials: "include",
+        body: JSON.stringify({email, password}),
+      });
+
+      if (!response.ok) {
+        throw new Error("failed to login");
+      }
+
+      // reached here means there is no error occured and login successfully
+      // after login the csrftoken is cleared in backend, but the csrfToken is still there in frontend so we want to clear it and get another csrf token for the signed-in session
+      setCsrfToken('');
+      await loadCsrfToken();
+    } catch (error) {
+      setErrorMessage("unable to login");
+    }
+  }
+
+  // it runs after App mounts, and React Strict Mode may run it twice in development, as you saw earlier
+  useEffect(() => {
+    loadCsrfToken();
+  }, [])
+
   return (
     <>
-      <label htmlFor="task-title">New Task Title</label>
+      <label htmlFor="email">email</label>
+      <input 
+        id="email" 
+        type="email" 
+        placeholder='Enter an Email' 
+        value={email} 
+        onChange={(event) => setEmail(event.target.value)}
+      />
+      <label htmlFor="password">Password</label>
+      <input 
+        id="password" 
+        type="password" 
+        placeholder='Enter a password' 
+        value={password}
+        onChange={(event) => setPassword(event.target.value)}
+      />
+      <button type="button" onClick={handleLogin} disabled={!csrfToken}>
+        login
+      </button>
+
+      <label htmlFor="task-title">New task title</label>      
       <input
         id="task-title"
         type="text"
