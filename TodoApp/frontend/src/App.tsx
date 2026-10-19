@@ -27,13 +27,21 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  /*
+    1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
+    2. The server uses that ID to find the server-side HTTP session. Login changed the session ID and saved an authenticated SecurityContext in that session.
+    3. Spring Security loads that context. Your .anyRequest().authenticated() rule checks whether the request has an authenticated user before allowing it to reach TaskController. 
+    4. If allowed, getTasks() runs and returns its result.
+  */
   async function loadTasks() {
     setErrorMessage('');
     setLoading(true);
     try {
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
-      const response = await fetch("http://localhost:8080/tasks");
+      const response = await fetch("http://localhost:8080/tasks", {
+        credentials: "include"
+      });
 
       if (!response.ok) {
         throw new Error("Failed to load tasks");
@@ -185,6 +193,10 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
         throw new Error("failed to login");
       }
 
+      // reached here means there is no error occured and login successfully
+      // after login the csrftoken is cleared in backend, but the csrfToken is still there in frontend so we want to clear it and get another csrf token for the signed-in session
+      setCsrfToken('');
+      await loadCsrfToken();
     } catch (error) {
       setErrorMessage("unable to login");
     }

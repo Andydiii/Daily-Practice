@@ -161,5 +161,5 @@ Aug 29
 - [ ] Java LeetCode: one interview practice problem.
 - [ ] SQL: one short query.
 - [ ] Review: trace what happens from login to an authenticated task request.
-- [ ] Applications for jobs
+- [X] Applications for jobs
 - [ ] brandon app run  
