@@ -78,8 +78,10 @@ function App() {
       const response = await fetch('http://localhost:8080/tasks', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
         },
+        credentials: "include",
         body: JSON.stringify({ title: newTaskTitle.trim() }) // convert js object into a JSON 
       });
 
@@ -102,8 +104,13 @@ function App() {
     setCompleting(true);
     try {
       const response = await fetch(
-        `http://localhost:8080/tasks/${id}/complete`,
-        { method: 'PUT' }
+        `http://localhost:8080/tasks/${id}/complete`, {
+          method: 'PUT',
+          headers: {
+            'X-CSRF-TOKEN': csrfToken
+          },
+          credentials: "include"
+        }
       );
       if (!response.ok) {
         throw new Error("Failed to complete the task");
@@ -122,7 +129,11 @@ function App() {
   async function handleDelete(id: number) {
     try {
       const response = await fetch(`http://localhost:8080/tasks/${id}`, {
-        method: "DELETE"
+        method: "DELETE",
+        credentials: "include",
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
+        }
       });
       if (!response.ok) {
         throw new Error("Failed to delete the task");
@@ -138,8 +149,10 @@ function App() {
   async function handleEdit(id: number, title: string) {
       const response = await fetch(`http://localhost:8080/tasks/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
         },
         body: JSON.stringify({
           title: title
@@ -192,6 +205,9 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
       if (!response.ok) {
         throw new Error("failed to login");
       }
+
+      setEmail('');
+      setPassword('');
 
       // reached here means there is no error occured and login successfully
       // after login the csrftoken is cleared in backend, but the csrfToken is still there in frontend so we want to clear it and get another csrf token for the signed-in session

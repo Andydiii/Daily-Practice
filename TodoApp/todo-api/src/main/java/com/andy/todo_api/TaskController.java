@@ -26,7 +26,7 @@ Restarting the backend would lose its contents.
 
 
 // @CrossOrigin(origins = "http://localhost:5173") will make the response contain cors header and then the browser allows the specified origin to read the response body. otherwise browswer does not allow the react app to read the response JSON
-@CrossOrigin(origins = "http://localhost:5173") 
+@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true") 
 // 告诉 Spring：这个 class负责接收 HTTP request并返回 response。
 @RestController
 public class TaskController {

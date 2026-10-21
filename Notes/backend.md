@@ -921,6 +921,13 @@ For your Todo app:
 - `POST /tasks` creates a task, so Spring requires a CSRF token in addition to sign-in session
 - `POST /auth/login` changes the browser’s sign-in state, so Spring requires CSRF token there too. 
 
+## why only request that change data needs a CSRF token but request does not change data does not require?
+Because CSRF is about preventing an unwanted action, rather than proving that a request came from your React app.
+
+Suppose a malicious site causes your signed-in browser to send a request to your Todo backend. The browser may attach your session cookie:
+- GET /tasks: If GET only reads data, the request makes no change. The malicious site also cannot normally read the response because of the browser’s origin rules.
+- DELETE /tasks/5: If allowed with just the cookie, it would delete your task without your intention. Requiring a CSRF token adds something the malicious site cannot supply.
+
 ## why the malicious site cannot read the token and add the token into the post request?
 Your React app runs at http://localhost:5173. Its code can call your permitted backend endpoint, read the CSRF token from the response, and add it to POST /tasks. The malicious site runs at a different origin. It may be able to cause the browser to send a request with your Todo cookie, but it cannot normally read the token response intended for your app. Browser origin rules prevent its code from reading that response unless the backend allows its origin.
 
@@ -1027,4 +1034,5 @@ At this point, S1 is an anonymous session. The user has a session and a CSRF tok
 6. The backend accepts the authenticated session and returns the user’s tasks. The user does not need to log in again.
 If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
 If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+
 
