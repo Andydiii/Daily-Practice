@@ -162,4 +162,8 @@ Aug 29
 - [ ] SQL: one short query.
 - [ ] Review: trace what happens from login to an authenticated task request.
 - [X] Applications for jobs
-- [ ] brandon app run  
+- [ ] brandon app run
+
+10.21
+- [ ] leetcode 189
+- [ ] 
