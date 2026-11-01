@@ -164,6 +164,7 @@ Aug 29
 - [X] Applications for jobs
 - [ ] brandon app run
 
-10.21
-- [ ] leetcode 189
-- [ ] 
+10.31
+- [X] project 
+- [ ] Amazon OA
+- [ ] brandon project

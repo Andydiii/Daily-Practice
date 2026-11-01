@@ -75,15 +75,22 @@ public class AuthController {
         purpose:
             my own words: mark the user is authenticated.
 
+            the returned usernamePasswordAuthenticationToken is stored in the backend HTTP session, inside a SecurityContext.
+
+            HTTP session
+                → SecurityContext
+                    → UsernamePasswordAuthenticationToken
+                        → principal: userId
+                        → credentials: null
+                        → authorities: empty list
+
             For example, if the service verifies a user and returns ID 7, this creates an object meaning: “User 7 has been verified; no credentials or roles are stored in this object.” We put that object in the SecurityContext so Spring Security can recognize the login.
 
             There is also unauthenticated(principal, credentials), which creates an object with isAuthenticated() == false for credentials that have not been verified yet. The difference is a security promise, so only call authenticated(...) after your password check succeeds.
 
             Your authService.authenticate(loginRequest) checks the password and returns an int user ID. But Spring Security cannot treat a plain number as proof that the user is logged in. It expects an Authentication object in the SecurityContext.
 
-            authenticated(...) is a static factory method that creates a UsernamePasswordAuthenticationToken whose isAuthenticated() value is true. It does not check the password. Your AuthService.authenticate(loginRequest) must do that first.
-
-        
+            authenticated(...) is a static factory method that creates a UsernamePasswordAuthenticationToken whose isAuthenticated() value is true. It does not check the password. Your AuthService.authenticate(loginRequest) must do that first.  
         */
         var authentication = UsernamePasswordAuthenticationToken.authenticated(
             userId,  // principal: WHO the user is
