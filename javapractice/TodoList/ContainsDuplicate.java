@@ -9,7 +9,6 @@ public class ContainsDuplicate {
             if (!seen.add(nums[i])) {
                 return true;
             }
-            
         }
         return false;
     }

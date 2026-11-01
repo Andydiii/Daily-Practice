@@ -1009,7 +1009,7 @@ Token B: the CSRF token obtained after login
 
 ## First visit: the browser has no session cookie
 1. React starts running in the browser at http://localhost:5173.
-2. React calls fetch("http://localhost:8080/auth/csrf", { credentials: "include" }). We still need to write this startup cal l in React. Opening the page does not call /auth/csrf automatically.
+2. React calls fetch("http://localhost:8080/auth/csrf", { credentials: "include" }). We still need to write this startup call in React. Opening the page does not call /auth/csrf automatically.
 3. The browser checks its cookies for localhost. On this first visit, the browser has no JSESSIONID, so the browser sends the `GET /auth/csrf` request without that cookie.
 4. Spring Security generates a token and creates a new HTTP session to store the expected token. Spring’s session-based CSRF repository stores the expected token in the HTTP session.
 5. The backend returns the token information in the response body and sends cookie C1 through a Set-Cookie response header.
