@@ -25,3 +25,6 @@ public class Anagrams {
         System.out.println(getAnagrams(strs)); 
     }
 }
+
+// time: O(n * klogk) where n is the size of the strs and k is the max size of the word. klogk is the sort time complexity
+// space: O(n * k)
