@@ -163,6 +163,15 @@ for (Map.Entry<String, List<String>> entry : map.entrySet()) {
 ```
 get the value of the key(if there exists one) or return default value: `map.getOrDefault("Apple", 0);`
 check existence: `map.containsKey('Apple')`
+sort: 
+```java
+List<Map.Entry<Integer, Integer>> entries = new ArrayList<>(map.entrySet());
+entries.sort((a, b) ->
+    Integer.compare(b.getValue(), a.getValue())
+);
+// Using b before a gives descending order.
+// Using Integer.compare(a.getValue(), b.getValue()) would give ascending order.
+```
 
 
 ## Stack(Last in first out)
