@@ -137,17 +137,28 @@ numbers.isEmpty();    // true
 Import the HashMap class: `import java.util.HashMap; ` 
 initilize a map: `HashMap<String, String> capitalCities = new HashMap<>();`
 Add keys and values (Country, City) `capitalCities.put("England", "London");`
+To add a value into a list value: `map.get(i).add(j)`
 Access an Item/replace old with new value: `capitalCities.get("England");`
 remove item: `capitalCities.remove("England");`
 size: `capitalCities.size();`
 loop through a hashmap:
 ```java
+// loop a map's key
 for (String i : capitalCities.keySet()) {
   System.out.println(i);
 }
 
+// loop a map's value
 for (String i : capitalCities.values()) {
   System.out.println(i);
+}
+
+// loop a map's key value pair
+for (Map.Entry<String, List<String>> entry : map.entrySet()) {
+    String key = entry.getKey();
+    List<String> words = entry.getValue();
+
+    System.out.println(key + " -> " + words);
 }
 ```
 get the value of the key(if there exists one) or return default value: `map.getOrDefault("Apple", 0);`
@@ -172,7 +183,8 @@ isEmpty() // 是否为空
 
 ## ArrayList
 import java.util.ArrayList;
-create a list: `ArrayList<String> lst = new ArratList<>()`
+create a empty list: `ArrayList<String> lst = new ArratList<>()`
+create a non-empty list : `ArrayList<String> lst = new ArratList<>(List.of("ate", "eat", "aet", "abc", "bca", "eaff"))`
 size: `.size()`
 get ith element in the list: `lst.get(i)`
 add element: `lst.add()`
@@ -197,6 +209,14 @@ read a int: `int age = scanner.nextInt();`
 read a word: `next()`
 
 ## String
+**Sort string**:
+```java
+// We sort a character array because Java strings cannot be modified.
+String word = "eat";
+char[] letters = word.toCharArray(); // convert a string to a char array
+Arrays.sort(letters);
+String key = new String(letters); // convert a char array to a string
+```
 **type**: must declare as `String` not `string`, there is no `string`
 **string comparison**: `DO NOT use == but use str1.equals(str2)`
 comapre with a char will alawys return false.
@@ -1036,5 +1056,6 @@ At this point, S1 is an anonymous session. The user has a session and a CSRF tok
 6. The backend accepts the authenticated session and returns the user’s tasks. The user does not need to log in again.
 If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
 If the session has expired or the backend has lost the session, the protected GET /tasks request is rejected. React should then show the login UI.
+
 
 

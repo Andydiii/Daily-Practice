@@ -99,3 +99,11 @@ A:
 
 A: 1. why we use class `UpdateTaskTitleRequest` is because this endpoint is to update the existing tasks' `title`, and this class tells spring to use json converter to convert incoming request body that contains only `title` into a `UpdateTaskTitleRequest` object. We should not use `Task` since this patch is deigned for updating the title in existing task.
 we dont want this endpoint to update the `id` and `completed` since this endpoint is used only for updating title. `Complete` status update is handled by the other endpoint.
+
+- Q14: 解释 Todo 项目里 authentication 和 authorization 的区别，以及为什么登录了仍然不能修改别人的 task。
+Authentication: 
+  - who are you? are you logged in?
+  - Login verifies email/password and saves an authenticated security context in http session stored in backend. The security context contains the userId. Later requests send the session cookie so the sprint can load it and recognize which user sent the request.
+Authorization:
+  - are you allowed to perform this action?
+  - findByIdAndOwner_Id(id, userId) ensures the task belongs to the signed-in user before user can change/read it.
