@@ -166,5 +166,8 @@ Aug 29
 
 10.31
 - [X] project 
-- [ ] Amazon OA
+- [X] Amazon OA
+- [X] baguwen question authentication vs authorization
 - [ ] brandon project
+- [X] leetcode Group Anagrams
+- [ ] apply for jobs
