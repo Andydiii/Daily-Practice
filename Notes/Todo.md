@@ -170,4 +170,23 @@ Aug 29
 - [X] baguwen question authentication vs authorization
 - [ ] brandon project
 - [X] leetcode Group Anagrams
-- [ ] apply for jobs
+- [X] apply for jobs
+
+11-3
+# SDE Prep — Current Round
+
+## Coding Practice — 3 Questions
+- [X] LC 121 — Best Time to Buy and Sell Stock
+- [X] LC 20 — Valid Parentheses
+- [X] LC 3 — Longest Substring Without Repeating Characters
+
+## Todo Project
+- [ ] Add All / Completed / Incomplete task filtering.
+- [ ] Ensure filtered results only include the logged-in user's tasks.
+- [ ] Test the feature and commit the changes.
+
+## Interview Fundamentals
+- [ ] Explain HashMap vs HashSet, when to use each, and their time complexity.
+
+## Job Applications
+- [ ] Submit 2–3 suitable applications to Canada-based roles.

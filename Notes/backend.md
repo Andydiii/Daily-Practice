@@ -113,6 +113,7 @@ If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares t
 # Java Data Structure
 
 ## Character:
+java does not support empty character: `''`, `char prev = '\0'`; // null character, not an empty value
 Comparison: `c1 < c2`
 Letters or numbers: `Character.isLetterOrDigit(c1)`
 tolowercase: `Character.toLowerCase(c1)`;
