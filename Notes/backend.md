@@ -183,7 +183,7 @@ Deque<Integer> stack = new ArrayDeque<>();
 stack.push(10);  // 入栈
 stack.push(20);
 stack.pop();     // 出栈，得到 20
-stack.peek();    // 查看栈顶，得到 10
+stack.peek();    // 查看栈顶，得到 10, before use this make sure stack is non-empty. If empty it gives null 
 
 push()    // 放入栈顶
 pop()     // 移除并返回栈顶

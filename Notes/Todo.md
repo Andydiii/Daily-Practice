@@ -181,12 +181,12 @@ Aug 29
 - [X] LC 3 — Longest Substring Without Repeating Characters
 
 ## Todo Project
-- [ ] Add All / Completed / Incomplete task filtering.
-- [ ] Ensure filtered results only include the logged-in user's tasks.
-- [ ] Test the feature and commit the changes.
+- [X] Add All / Completed / Incomplete task filtering.
+- [X] Ensure filtered results only include the logged-in user's tasks.
+- [X] Test the feature and commit the changes.
 
 ## Interview Fundamentals
 - [ ] Explain HashMap vs HashSet, when to use each, and their time complexity.
 
 ## Job Applications
-- [ ] Submit 2–3 suitable applications to Canada-based roles.
+- [X] Submit 2–3 suitable applications to Canada-based roles.

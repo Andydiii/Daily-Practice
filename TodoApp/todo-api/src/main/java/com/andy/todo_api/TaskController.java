@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 // Authentication represents the current request’s login information, including the principal we stored during login.
 import org.springframework.security.core.Authentication;
@@ -41,11 +42,32 @@ public class TaskController {
     // 收到 GET /tasks 时，执行下面的 hello() 方法。
     @GetMapping("/tasks") 
     // You already imported Authentication for task creation
-    public List<Task> getTasks(Authentication authentication) {
+    public List<Task> getTasks(
+        Authentication authentication,
+        @RequestParam(name = "completed", required = false) Boolean completed
+        /*
+            RequestParam lets Spring read a value from the URL’s query string, such as ?completed=true.
+            - name = "completed" identifies the URL parameter to read.
+            - required = false' means this filter is not mandatory. this allows user can do `get /tasks` too
+            - Spring converts the URL text "true" or "false" into a Boolean value.
+
+            - why Boolean instead of boolean?
+            Primitive boolean only supports true and false. The wrapper Boolean also supports null, meaning “no filter supplied.”
+            | Request | `completed` value | Query used |
+            |---|---|---|
+            | `/tasks` | `null` | All tasks for this user |
+            | `/tasks?completed=true` | `true` | Completed tasks for this user |
+            | `/tasks?completed=false` | `false` | Incomplete tasks for this user |
+        */
+    ) {
         // has to use (Integer) since authentication.getPrincipal() will return a Object. we need to cast it to Integer and then java automatically convert Integer to an int.
         int userId = (Integer) authentication.getPrincipal();
+        // user wants to load all tasks
+        if (completed == null) {
+            return taskRepository.findByOwner_Id(userId);
+        }
 
-        return taskRepository.findByOwner_Id(userId);
+        return taskRepository.findByOwner_IdAndCompleted(userId, completed);
     }
 
     // taskController asks for taskRepository in its constructor, and Spring supplies it.
