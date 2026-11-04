@@ -202,6 +202,9 @@ replace an element: `lst.set(i, "apple")`
 update an object: `lst.get(i).fieldName = "newValue"`
 check empty: `lst.isEmpty()`
 remove element at a specific index: `tasks.remove(i);` (this will return the deleted task)
+sort a ArrayList in ascending order [1, 3, 5]: `numbers.sort(Comparator.naturalOrder());`
+sort a ArrayList in Descending order [5, 3, 1]: `numbers.sort(Comparator.reverseOrder());`
+
 
 ## Array
 Create a new array: 
@@ -209,6 +212,7 @@ Create a new array:
 // Shortcut (most common) `String[] cars = {"Volvo", "BMW", "Ford", "Mazda"};` \
 length: 
 `array.length`;
+sort a array nums: `arrays.sort(nums)`;
 
 
 ## Scanner

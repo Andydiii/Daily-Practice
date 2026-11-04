@@ -196,7 +196,7 @@ Aug 29
 
 ## Coding Practice — 3 Questions
 - [X] LC 167 — Two Sum II — Input Array Is Sorted
-- [ ] LC 15 — 3Sum
+- [X] LC 15 — 3Sum
 - [ ] LC 424 — Longest Repeating Character Replacement
 
 ## Todo Project
