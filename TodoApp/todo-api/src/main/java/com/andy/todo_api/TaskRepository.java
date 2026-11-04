@@ -25,4 +25,13 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     List<Task> findByOwner_Id(int userId); 
     // The extra owner condition checks whether the signed-in user is allowed to modify that task.
     Optional<Task> findByIdAndOwner_Id(int id, int userId);
+    // Completed refers to Task.completed.
+    // Spring Data JPA builds the query from these property names.
+    /*
+        SELECT *
+        FROM task
+        WHERE user_id = ?
+        AND completed = ?;
+    */
+    List<Task> findByOwner_IdAndCompleted(int userId, boolean completed);
 }

@@ -113,6 +113,7 @@ If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares t
 # Java Data Structure
 
 ## Character:
+java does not support empty character: `''`, `char prev = '\0'`; // null character, not an empty value
 Comparison: `c1 < c2`
 Letters or numbers: `Character.isLetterOrDigit(c1)`
 tolowercase: `Character.toLowerCase(c1)`;
@@ -182,7 +183,7 @@ Deque<Integer> stack = new ArrayDeque<>();
 stack.push(10);  // 入栈
 stack.push(20);
 stack.pop();     // 出栈，得到 20
-stack.peek();    // 查看栈顶，得到 10
+stack.peek();    // 查看栈顶，得到 10, before use this make sure stack is non-empty. If empty it gives null 
 
 push()    // 放入栈顶
 pop()     // 移除并返回栈顶

@@ -10,6 +10,8 @@ type Task = {
   completed: boolean
 }
 
+type TaskFilter = "all" | "completed" | "incomplete";
+
 function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -26,6 +28,7 @@ function App() {
   const [csrfToken, setCsrfToken] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [filter, setFilter] = useState('all');
 
   /*
     1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
@@ -37,9 +40,16 @@ function App() {
     setErrorMessage('');
     setLoading(true);
     try {
+      let url = "http://localhost:8080/tasks";
+
+      if (filter == "completed") {
+        url += "?completed=true";
+      } else if (filter == "incomplete") {
+        url += "?completed=false";
+      }
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
-      const response = await fetch("http://localhost:8080/tasks", {
+      const response = await fetch(url, {
         credentials: "include"
       });
 
@@ -256,6 +266,18 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
       <button type='button' onClick={createTask} disabled={creating}>
         {creating ? 'Creating...' : 'Add a Task'}
       </button>
+      <label htmlFor="task-filter">show-tasks: </label>
+      <select 
+        id="task-filter" 
+        
+        onChange={(event) => {
+          setFilter(event.target.value);
+        }
+      }>
+        <option value="all">All</option>
+        <option value="completed">Completed</option>
+        <option value="incomplete">Incomplete</option>
+      </select>
       <button onClick={loadTasks} disabled={loading}>
         {loading ? 'Loading...' : 'Load Tasks'}
       </button>
