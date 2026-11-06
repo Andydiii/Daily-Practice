@@ -139,7 +139,7 @@ Import the HashMap class: `import java.util.HashMap; `
 initilize a map: `HashMap<String, String> capitalCities = new HashMap<>();`
 Add keys and values (Country, City) `capitalCities.put("England", "London");`
 To add a value into a list value: `map.get(i).add(j)`
-Access an Item/replace old with new value: `capitalCities.get("England");`
+Access an Item/replace old with new value: `capitalCities.get("England");` (retrun null if a key doesnot exist.)
 remove item: `capitalCities.remove("England");`
 size: `capitalCities.size();`
 loop through a hashmap:

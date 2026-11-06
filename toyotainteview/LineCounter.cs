@@ -2,6 +2,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
+// every vertical line must cross the middle row, 
 internal class Program
 {
     // JPG compression can make black pixels slightly gray.
@@ -11,8 +12,10 @@ internal class Program
     {
         try
         {
+            // requirement: Take exactly one argument	Checks args.Length != 1
             if (args.Length != 1)
             {
+                // display error message for an invalid argument count
                 Console.WriteLine(
                     "Error: Expected exactly one argument: an absolute image path.");
                 Console.WriteLine(
@@ -22,6 +25,7 @@ internal class Program
 
             string imagePath = args[0];
 
+            // 
             if (!Path.IsPathFullyQualified(imagePath))
             {
                 throw new ArgumentException(
