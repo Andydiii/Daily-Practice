@@ -25,13 +25,14 @@ internal class Program
 
             string imagePath = args[0];
 
-            // 
+            // Accept an absolute image path only
             if (!Path.IsPathFullyQualified(imagePath))
             {
                 throw new ArgumentException(
                     "Please provide an absolute image path.");
             }
 
+            // file does not exsit
             if (!File.Exists(imagePath))
             {
                 throw new FileNotFoundException(
@@ -77,3 +78,8 @@ internal class Program
         return lineCount;
     }
 }
+
+// based on the question requirement, each line across the middle line, so the middle row contains enough information. so I just traverse the middle row to count the verticle line. A black pixel only increase the count if the preceding pixel is white.
+
+// allow near-black pixels. the threhold 128 accomodates small color changes from jpg compression
+// the scan takes O(width) and O(1) in space. excluding image loading and storage
