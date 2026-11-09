@@ -107,3 +107,9 @@ Authentication:
 Authorization:
   - are you allowed to perform this action?
   - findByIdAndOwner_Id(id, userId) ensures the task belongs to the signed-in user before user can change/read it.
+
+- Q15: HashMap vs HashSet:
+hashmap stores key-value pair, but hashset stores unique elements. 
+use HashMap when I need associated information such as a char's frequency.
+use HashSet when I only need to track existence or duplicates.
+average add/lookup/remove all are O(1) for both 

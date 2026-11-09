@@ -186,7 +186,27 @@ Aug 29
 - [X] Test the feature and commit the changes.
 
 ## Interview Fundamentals
-- [ ] Explain HashMap vs HashSet, when to use each, and their time complexity.
+- [X] Explain HashMap vs HashSet, when to use each, and their time complexity.
 
 ## Job Applications
 - [X] Submit 2–3 suitable applications to Canada-based roles.
+
+11.4
+# SDE Prep — Current Round
+
+## Coding Practice — 3 Questions
+- [X] LC 167 — Two Sum II — Input Array Is Sorted
+- [X] LC 15 — 3Sum
+- [X] LC 424 — Longest Repeating Character Replacement
+
+## Todo Project
+- [ ] Add backend pagination.
+- [ ] Preserve user ownership and All / Completed / Incomplete filtering.
+- [ ] Test pagination and commit the changes.
+
+## Interview Fundamentals
+- [ ] Explain sliding windows: when to expand and when to shrink.
+
+## Job Applications
+- [ ] Submit 2–3 suitable applications to Canada-based roles.
+
