@@ -10,6 +10,15 @@ type Task = {
   completed: boolean
 }
 
+type TaskPage = {
+  content: Task[]
+  number: number
+  totalPages: number
+  totalElements: number
+  first: boolean
+  last: boolean
+}
+
 type TaskFilter = "all" | "completed" | "incomplete";
 
 function App() {
@@ -30,22 +39,27 @@ function App() {
   const [password, setPassword] = useState('');
   const [filter, setFilter] = useState('all');
 
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
+  const pageSize = 2;
+
   /*
     1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
     2. The server uses that ID to find the server-side HTTP session. Login changed the session ID and saved an authenticated SecurityContext in that session.
     3. Spring Security loads that context. Your .anyRequest().authenticated() rule checks whether the request has an authenticated user before allowing it to reach TaskController. 
     4. If allowed, getTasks() runs and returns its result.
   */
-  async function loadTasks() {
+  async function loadTasks(requestedPage: number = 0) {
     setErrorMessage('');
     setLoading(true);
     try {
-      let url = "http://localhost:8080/tasks";
+      let url = `http://localhost:8080/tasks?page=${requestedPage}&size=${pageSize}`;
 
       if (filter == "completed") {
-        url += "?completed=true";
+        url += "&completed=true";
       } else if (filter == "incomplete") {
-        url += "?completed=false";
+        url += "&completed=false";
       }
       // const means `response` cannot be updated.
       // fetch returns a promise so we need to wait until the real response is ready before we move forward.
@@ -57,9 +71,12 @@ function App() {
         throw new Error("Failed to load tasks");
       }
 
-      const data: Task[] = await response.json();
+      const data: TaskPage = await response.json();
 
-      setTasks(data);
+      setTasks(data.content);
+      setPage(data.number);
+      setTotalPages(data.totalPages);
+      setTotalElements(data.totalElements);
     } catch (error) {
       console.error(error)
       setErrorMessage('Could not load tasks. Please try again.')
@@ -99,9 +116,8 @@ function App() {
         throw new Error("Failed to create task");
       }
 
-      const newTask: Task = await response.json();
-      setTasks((oldTasks) => { return [...oldTasks, newTask] });
       setNewTaskTitle('');
+      await loadTasks(0);
     } catch (error) {
       console.error(error);
       setErrorMessage("Could not create task. Please try again");
@@ -125,10 +141,7 @@ function App() {
       if (!response.ok) {
         throw new Error("Failed to complete the task");
       }
-      const updatedTask: Task = await response.json();
-      setTasks(tasks.map((task) => {
-        return task.id === id ? updatedTask : task;
-      }));
+      await loadTasks(0);
     } catch (error) {
       setErrorMessage("Could not update the task, please try again");
     } finally {
@@ -148,9 +161,7 @@ function App() {
       if (!response.ok) {
         throw new Error("Failed to delete the task");
       }
-      setTasks(tasks.filter((task) => {
-        return task.id != id;
-      }))
+      await loadTasks(0);
     } catch (error) {
       setErrorMessage("Failed to delete the task")
     }
@@ -235,6 +246,7 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
 
   return (
     <>
+      {errorMessage && <p role='alert'>{errorMessage}</p>}
       <label htmlFor="email">email</label>
       <input 
         id="email" 
@@ -278,10 +290,30 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
         <option value="completed">Completed</option>
         <option value="incomplete">Incomplete</option>
       </select>
-      <button onClick={loadTasks} disabled={loading}>
+      <button onClick={() => { loadTasks(0) }} disabled={loading}>
         {loading ? 'Loading...' : 'Load Tasks'}
       </button>
-      {errorMessage && <p role='alert'>{errorMessage}</p>}
+      <button
+        onClick = {() => loadTasks(page - 1)}
+        disabled = {loading || page === 0 || totalPages === 0}
+      >
+        Previous
+      </button>
+
+      <span>
+        {totalPages === 0 
+        ? 'No Pages' 
+        : `Page ${page + 1} of ${totalPages}`}
+        {' '} - {totalElements} tasks
+      </span>
+
+      <button 
+        onClick={() => {loadTasks(page + 1)}}
+        disabled={loading || page >= totalPages - 1}
+      >
+        Next
+      </button>
+
       <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
       <button onClick={() => setSearchText('')}>Clear</button>
       {filteredTasks.length === 0 && <p>No matching tasks.</p>}

@@ -208,5 +208,5 @@ Aug 29
 - [ ] Explain sliding windows: when to expand and when to shrink.
 
 ## Job Applications
-- [ ] Submit 2–3 suitable applications to Canada-based roles.
+- [X] Submit 2–3 suitable applications to Canada-based roles.
 
