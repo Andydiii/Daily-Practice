@@ -214,15 +214,16 @@ Aug 29
 11.9
 - [X] 1:1 with melody
 - [X] respond emails
-- [ ] stock
+- [X] stock
 - [X] cibc gic phone call 12pm-1pm
 - [X] CICD speech draft
-- [ ] resume and speech draft:
-   - [ ] session authentication draft
-   - [ ] CICD draft 
+- [X] resume and speech draft:
+   - [X] session authentication draft
+   - [X] CICD draft 
 
 ## Job Applications
-- [ ] Submit 2–3 suitable applications to Canada-based roles, prioritizing large companies.
+- [X] Submit 2–3 suitable applications to Canada-based roles, prioritizing large companies.
+- [ ] bmo ng asked for referral
 
 # SDE Prep — Current Round
 
