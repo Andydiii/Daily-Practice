@@ -2,6 +2,8 @@ package com.andy.todo_api;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 // first type parameter should be the type of the entity(a row in table)
 // second type parameter is the field we marked @Id i.e. unique identifier of the entity/row
@@ -34,4 +36,19 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
         AND completed = ?;
     */
     List<Task> findByOwner_IdAndCompleted(int userId, boolean completed);
+
+    /*
+    | Type | Purpose |
+    |---|---|
+    | `Pageable` | Describes the requested page number, page size and sorting |
+    | `Page<Task>` | Contains that page’s tasks plus metadata, such as total matching tasks and total pages |
+    
+    Why can we keep two methods with the same name? This is method overloading: the parameter lists differ. Java chooses the method based on the arguments supplied.
+    */
+    Page<Task> findByOwner_Id(int userId, Pageable pageable);
+    Page<Task> findByOwner_IdAndCompleted(
+        int userId,
+        boolean completed,
+        Pageable pageable
+    );
 }

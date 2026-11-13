@@ -21,6 +21,20 @@ import org.springframework.web.bind.annotation.RequestParam;
 // Authentication represents the current request’s login information, including the principal we stored during login.
 import org.springframework.security.core.Authentication;
 
+
+/*
+    | Import | Purpose |
+    |---|---|
+    | `Page` | Holds tasks and pagination metadata |
+    | `Pageable` | Describes pagination settings |
+    | `PageRequest` | Creates those settings |
+    | `Sort` | Defines the ordering of results |
+*/
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+
 /*
 Our current controller list has two limitations:
 
@@ -42,9 +56,11 @@ public class TaskController {
     // 收到 GET /tasks 时，执行下面的 hello() 方法。
     @GetMapping("/tasks") 
     // You already imported Authentication for task creation
-    public List<Task> getTasks(
+    public Page<Task> getTasks(
         Authentication authentication,
-        @RequestParam(name = "completed", required = false) Boolean completed
+        @RequestParam(name = "completed", required = false) Boolean completed,
+        @RequestParam(name = "page", defaultValue = "0") int page,
+        @RequestParam(name = "size", defaultValue = "5") int size
         /*
             RequestParam lets Spring read a value from the URL’s query string, such as ?completed=true.
             - name = "completed" identifies the URL parameter to read.
@@ -58,16 +74,41 @@ public class TaskController {
             | `/tasks` | `null` | All tasks for this user |
             | `/tasks?completed=true` | `true` | Completed tasks for this user |
             | `/tasks?completed=false` | `false` | Incomplete tasks for this user |
+
+            defaultValue = "0" / "5": use page 0 and size 5 when those URL parameters are absent.
+            Validation: rejects negative pages and sizes outside 1–100 with 400. The upper limit prevents excessively large pages.
+            PageRequest.of(...): creates the pagination settings.
+            Sort.by("id").ascending(): sorts by the Java entity’s id property, smallest first.
+            Passing pageable: selects the repository overload you just added.
+            Page<Task> return type: returns a page object instead of a plain JSON array.
         */
     ) {
-        // has to use (Integer) since authentication.getPrincipal() will return a Object. we need to cast it to Integer and then java automatically convert Integer to an int.
-        int userId = (Integer) authentication.getPrincipal();
-        // user wants to load all tasks
-        if (completed == null) {
-            return taskRepository.findByOwner_Id(userId);
+        if (page < 0 || size < 1 || size > 100) {
+            throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Page must be at least 0 and size must be between 1 and 100"
+            );
         }
 
-        return taskRepository.findByOwner_IdAndCompleted(userId, completed);
+        // has to use (Integer) since authentication.getPrincipal() will return a Object. we need to cast it to Integer and then java automatically convert Integer to an int.
+        int userId = (Integer) authentication.getPrincipal();
+
+        Pageable pageable = PageRequest.of(
+            page,
+            size,
+            Sort.by("id").ascending()
+        );
+
+        // if user wants to load all tasks no matter it is completed or not
+        if (completed == null) {
+            return taskRepository.findByOwner_Id(userId, pageable);
+        }
+
+        return taskRepository.findByOwner_IdAndCompleted(
+            userId, 
+            completed,
+            pageable
+        );
     }
 
     // taskController asks for taskRepository in its constructor, and Spring supplies it.
