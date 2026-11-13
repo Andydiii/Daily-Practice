@@ -200,13 +200,43 @@ Aug 29
 - [X] LC 424 — Longest Repeating Character Replacement
 
 ## Todo Project
-- [ ] Add backend pagination.
-- [ ] Preserve user ownership and All / Completed / Incomplete filtering.
-- [ ] Test pagination and commit the changes.
+- [X] Add backend pagination.
+- [X] Preserve user ownership and All / Completed / Incomplete filtering.
+- [X] Test pagination and commit the changes.
 
 ## Interview Fundamentals
-- [ ] Explain sliding windows: when to expand and when to shrink.
+- [X] Explain sliding windows: when to expand and when to shrink.
 
 ## Job Applications
 - [X] Submit 2–3 suitable applications to Canada-based roles.
+
+
+11.9
+- [X] 1:1 with melody
+- [X] respond emails
+- [ ] stock
+- [X] cibc gic phone call 12pm-1pm
+- [X] CICD speech draft
+- [ ] resume and speech draft:
+   - [ ] session authentication draft
+   - [ ] CICD draft 
+
+## Job Applications
+- [ ] Submit 2–3 suitable applications to Canada-based roles, prioritizing large companies.
+
+# SDE Prep — Current Round
+
+## Coding Practice — 3 Questions
+- [ ] LC 33 — Search in Rotated Sorted Array
+- [ ] LC 153 — Find Minimum in Rotated Sorted Array
+- [ ] LC 875 — Koko Eating Bananas
+
+## Todo Project
+- [ ] Add backend task-title search using a query parameter.
+- [ ] Combine search with user ownership, completion filtering and pagination.
+- [ ] Connect the frontend search input to the backend and reset to page 0 for a new search.
+- [ ] Test the feature and commit the changes.
+
+## Interview Fundamentals
+- [ ] Explain binary search: how to choose which half to discard and why its time complexity is O(log n).
 
