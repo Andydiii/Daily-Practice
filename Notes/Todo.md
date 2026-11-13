@@ -226,9 +226,10 @@ Aug 29
 - [ ] bmo ng asked for referral
 
 # SDE Prep — Current Round
-
+  
 ## Coding Practice — 3 Questions
-- [ ] LC 33 — Search in Rotated Sorted Array
+- [X] LC 33 — Search in Rotated Sorted Array
+
 - [ ] LC 153 — Find Minimum in Rotated Sorted Array
 - [ ] LC 875 — Koko Eating Bananas
 
