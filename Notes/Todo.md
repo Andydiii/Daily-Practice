@@ -229,9 +229,9 @@ Aug 29
   
 ## Coding Practice — 3 Questions
 - [X] LC 33 — Search in Rotated Sorted Array
-
-- [ ] LC 153 — Find Minimum in Rotated Sorted Array
-- [ ] LC 875 — Koko Eating Bananas
+- [X] simplify the soliton 
+- [X] LC 153 — Find Minimum in Rotated Sorted Array
+- [X] LC 875 — Koko Eating Bananas
 
 ## Todo Project
 - [ ] Add backend task-title search using a query parameter.
