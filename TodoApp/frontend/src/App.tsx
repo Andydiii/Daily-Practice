@@ -43,6 +43,7 @@ function App() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const pageSize = 2;
+  const [activeSearch, setActiveSearch] = useState('');
 
   /*
     1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
@@ -50,11 +51,19 @@ function App() {
     3. Spring Security loads that context. Your .anyRequest().authenticated() rule checks whether the request has an authenticated user before allowing it to reach TaskController. 
     4. If allowed, getTasks() runs and returns its result.
   */
-  async function loadTasks(requestedPage: number = 0) {
+  async function loadTasks(
+    requestedPage: number = 0,
+    keyword: string = activeSearch
+  ) {
     setErrorMessage('');
     setLoading(true);
     try {
-      let url = `http://localhost:8080/tasks?page=${requestedPage}&size=${pageSize}`;
+      const trimmedKeyword = keyword.trim();
+
+      let url = 
+      `http://localhost:8080/tasks?page=${requestedPage}` + 
+      `&size=${pageSize}` + 
+      `&search=${encodeURIComponent(trimmedKeyword)}`;
 
       if (filter == "completed") {
         url += "&completed=true";

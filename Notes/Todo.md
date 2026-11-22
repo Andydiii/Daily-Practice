@@ -233,6 +233,7 @@ Aug 29
 - [X] LC 153 — Find Minimum in Rotated Sorted Array
 - [X] LC 875 — Koko Eating Bananas
 - [X] LC 1768
+- [X] interview speech draft
 
 ## Todo Project
 - [ ] Add backend task-title search using a query parameter.
