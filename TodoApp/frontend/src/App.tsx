@@ -61,9 +61,12 @@ function App() {
       const trimmedKeyword = keyword.trim();
 
       let url = 
-      `http://localhost:8080/tasks?page=${requestedPage}` + 
-      `&size=${pageSize}` + 
-      `&search=${encodeURIComponent(trimmedKeyword)}`;
+        `http://localhost:8080/tasks?page=${requestedPage}` + 
+        `&size=${pageSize}` + 
+        // encodeURIComponent() safely encodes search text for a URL—for example, an & in a title must not become another query parameter.
+        `&search=${encodeURIComponent(trimmedKeyword)}`;
+
+      setActiveSearch(trimmedKeyword);
 
       if (filter == "completed") {
         url += "&completed=true";
@@ -94,11 +97,6 @@ function App() {
       setLoading(false)
     }
   }
-
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchText.toLowerCase())
-  )
-
 
   async function createTask() {
     setErrorMessage('');
@@ -323,10 +321,32 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
         Next
       </button>
 
-      <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
-      <button onClick={() => setSearchText('')}>Clear</button>
-      {filteredTasks.length === 0 && <p>No matching tasks.</p>}
-      {filteredTasks.map((task) => (
+      <input 
+        type="text" 
+        placeholder='Search Tasks' 
+        value={searchText} 
+        onChange={(event) => setSearchText(event.target.value)} 
+      />
+
+      <button
+        onClick={() => {loadTasks(0, searchText)}}
+        disabled={loading}
+      >
+        Search
+      </button>
+
+      <button 
+        onClick={() => {
+          setSearchText('');
+          loadTasks(0, '');
+        }}
+        disabled={loading}
+      >
+        Clear
+      </button>
+
+      {tasks.length === 0 && <p>No matching tasks.</p>}
+      {tasks.map((task) => (
         <TaskCard
           key={task.id}
           id={task.id}

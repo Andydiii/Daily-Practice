@@ -107,7 +107,7 @@ public class TaskController {
         if (completed == null) {
             return taskRepository.findByOwner_IdAndTitleContainingIgnoreCase(
                 userId, 
-                search, 
+                keyword, 
                 pageable
             );
         }
