@@ -247,7 +247,7 @@ Aug 29
 11.24
 Coding Practice — Linked Lists
 - [X] LC 206 — Reverse Linked List
-- [ ] LC 21 — Merge Two Sorted Lists
+- [X] LC 21 — Merge Two Sorted Lists
 - [ ] LC 141 — Linked List Cycle
 Todo Project — Logout
 - [ ] Add backend logout that invalidates the authenticated session.

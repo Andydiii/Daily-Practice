@@ -113,6 +113,9 @@ If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares t
 # Java Data Structure
 
 ## LinkedList:
+create linkedlsit:
+LinkedList<String> list = new LinkedList<>();
+
 Adding elements:
 `list.add("Java"); `          // Adds to the end
 `list.addFirst("Python"); `   // Adds to the beginning
