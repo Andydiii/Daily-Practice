@@ -248,7 +248,7 @@ Aug 29
 Coding Practice — Linked Lists
 - [X] LC 206 — Reverse Linked List
 - [X] LC 21 — Merge Two Sorted Lists
-- [ ] LC 141 — Linked List Cycle
+- [X] LC 141 — Linked List Cycle
 Todo Project — Logout
 - [ ] Add backend logout that invalidates the authenticated session.
 - [ ] Add a frontend Logout button that sends the CSRF token.
