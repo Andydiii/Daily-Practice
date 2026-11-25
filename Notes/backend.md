@@ -112,6 +112,22 @@ If `cookRice()` throws an exception, `makeDinner()` stops. Because it declares t
 
 # Java Data Structure
 
+## LinkedList:
+Adding elements:
+`list.add("Java"); `          // Adds to the end
+`list.addFirst("Python"); `   // Adds to the beginning
+`list.addLast("C++");`        // Adds to the end
+`list.add(1, "JavaScript"); ` // Inserts at index 1
+
+Accessing elements
+`String first = list.getFirst();` // "Python"
+`String item = list.get(1);`      // "JavaScript"
+
+Removing elements
+`list.removeFirst();` // Removes "Python"
+`list.removeLast();`  // Removes "C++"
+`list.remove("Java"); `// Removes by object
+
 ## Character:
 java does not support empty character: `''`, `char prev = '\0'`; // null character, not an empty value
 Comparison: `c1 < c2`
