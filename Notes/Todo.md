@@ -236,10 +236,10 @@ Aug 29
 - [X] interview speech draft
 
 ## Todo Project
-- [ ] Add backend task-title search using a query parameter.
-- [ ] Combine search with user ownership, completion filtering and pagination.
-- [ ] Connect the frontend search input to the backend and reset to page 0 for a new search.
-- [ ] Test the feature and commit the changes.
+- [X] Add backend task-title search using a query parameter.
+- [X] Combine search with user ownership, completion filtering and pagination.
+- [X] Connect the frontend search input to the backend and reset to page 0 for a new search.
+- [X] Test the feature and commit the changes.
 
 ## Interview Fundamentals
 - [ ] Explain binary search: how to choose which half to discard and why its time complexity is O(log n).
