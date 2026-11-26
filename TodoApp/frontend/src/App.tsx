@@ -43,6 +43,7 @@ function App() {
   const [totalPages, setTotalPages] = useState(0);
   const [totalElements, setTotalElements] = useState(0);
   const pageSize = 2;
+  const [activeSearch, setActiveSearch] = useState('');
 
   /*
     1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
@@ -50,11 +51,22 @@ function App() {
     3. Spring Security loads that context. Your .anyRequest().authenticated() rule checks whether the request has an authenticated user before allowing it to reach TaskController. 
     4. If allowed, getTasks() runs and returns its result.
   */
-  async function loadTasks(requestedPage: number = 0) {
+  async function loadTasks(
+    requestedPage: number = 0,
+    keyword: string = activeSearch
+  ) {
     setErrorMessage('');
     setLoading(true);
     try {
-      let url = `http://localhost:8080/tasks?page=${requestedPage}&size=${pageSize}`;
+      const trimmedKeyword = keyword.trim();
+
+      let url = 
+        `http://localhost:8080/tasks?page=${requestedPage}` + 
+        `&size=${pageSize}` + 
+        // encodeURIComponent() safely encodes search text for a URL—for example, an & in a title must not become another query parameter.
+        `&search=${encodeURIComponent(trimmedKeyword)}`;
+
+      setActiveSearch(trimmedKeyword);
 
       if (filter == "completed") {
         url += "&completed=true";
@@ -85,11 +97,6 @@ function App() {
       setLoading(false)
     }
   }
-
-  const filteredTasks = tasks.filter((task) =>
-    task.title.toLowerCase().includes(searchText.toLowerCase())
-  )
-
 
   async function createTask() {
     setErrorMessage('');
@@ -314,10 +321,32 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
         Next
       </button>
 
-      <input type="text" placeholder='Search Tasks' value={searchText} onChange={(event) => setSearchText(event.target.value)} />
-      <button onClick={() => setSearchText('')}>Clear</button>
-      {filteredTasks.length === 0 && <p>No matching tasks.</p>}
-      {filteredTasks.map((task) => (
+      <input 
+        type="text" 
+        placeholder='Search Tasks' 
+        value={searchText} 
+        onChange={(event) => setSearchText(event.target.value)} 
+      />
+
+      <button
+        onClick={() => {loadTasks(0, searchText)}}
+        disabled={loading}
+      >
+        Search
+      </button>
+
+      <button 
+        onClick={() => {
+          setSearchText('');
+          loadTasks(0, '');
+        }}
+        disabled={loading}
+      >
+        Clear
+      </button>
+
+      {tasks.length === 0 && <p>No matching tasks.</p>}
+      {tasks.map((task) => (
         <TaskCard
           key={task.id}
           id={task.id}

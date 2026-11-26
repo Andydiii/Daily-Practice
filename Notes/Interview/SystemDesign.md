@@ -131,7 +131,5 @@ PostgreSQL handles the concurrent inserts and give each one a distinct id. It do
 
 with nextid in controller, concurrent inserts may could lead to reading the same nextId before either increments and thus two tasks with same id occured.
 
-
-
-
-
+**Why did you move task searching from the frontend to the backend, and how does that affect pagination**
+I moved frontend searching/filtering to backend because frontend searching only checks one page at a time since only one page is loaded at a time. The backend searches all tasks belong to the authenticated user and paginates all results properly.

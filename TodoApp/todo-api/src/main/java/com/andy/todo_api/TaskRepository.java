@@ -41,7 +41,8 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     | Type | Purpose |
     |---|---|
     | `Pageable` | Describes the requested page number, page size and sorting |
-    | `Page<Task>` | Contains that page’s tasks plus metadata, such as total matching tasks and total pages |
+    | `Page<Task>` | contains the matching tasks for that page and the pagination metadata, such as total matching tasks and total pages |
+    | 
     
     Why can we keep two methods with the same name? This is method overloading: the parameter lists differ. Java chooses the method based on the arguments supplied.
     */
@@ -49,6 +50,19 @@ public interface TaskRepository extends JpaRepository<Task, Integer> {
     Page<Task> findByOwner_IdAndCompleted(
         int userId,
         boolean completed,
+        Pageable pageable
+    );
+
+    Page<Task> findByOwner_IdAndTitleContainingIgnoreCase(
+        int userId,
+        String search,
+        Pageable pageable
+    );
+
+    Page<Task> findByOwner_IdAndCompletedAndTitleContainingIgnoreCase(
+        int userId,
+        boolean completed,
+        String search,
         Pageable pageable
     );
 }

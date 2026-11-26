@@ -229,16 +229,34 @@ Aug 29
   
 ## Coding Practice — 3 Questions
 - [X] LC 33 — Search in Rotated Sorted Array
-
-- [ ] LC 153 — Find Minimum in Rotated Sorted Array
-- [ ] LC 875 — Koko Eating Bananas
+- [X] simplify the soliton 
+- [X] LC 153 — Find Minimum in Rotated Sorted Array
+- [X] LC 875 — Koko Eating Bananas
+- [X] LC 1768
+- [X] interview speech draft
 
 ## Todo Project
-- [ ] Add backend task-title search using a query parameter.
-- [ ] Combine search with user ownership, completion filtering and pagination.
-- [ ] Connect the frontend search input to the backend and reset to page 0 for a new search.
-- [ ] Test the feature and commit the changes.
+- [X] Add backend task-title search using a query parameter.
+- [X] Combine search with user ownership, completion filtering and pagination.
+- [X] Connect the frontend search input to the backend and reset to page 0 for a new search.
+- [X] Test the feature and commit the changes.
 
 ## Interview Fundamentals
 - [ ] Explain binary search: how to choose which half to discard and why its time complexity is O(log n).
 
+11.24
+Coding Practice — Linked Lists
+- [X] LC 206 — Reverse Linked List
+- [X] LC 21 — Merge Two Sorted Lists
+- [X] LC 141 — Linked List Cycle
+Todo Project — Logout
+- [ ] Add backend logout that invalidates the authenticated session.
+- [ ] Add a frontend Logout button that sends the CSRF token.
+- [ ] Clear displayed tasks and authentication state after logout; refresh the CSRF token for the next login.
+- [ ] Test logout, blocked access afterward, and logging back in; commit the changes.
+Interview Fundamentals
+- [ ] Explain PUT vs PATCH, including partial updates and idempotency.
+Job Applications
+- [ ] Apply to 3 suitable Canada-based new-grad or junior developer positions.
+- [ ] Record the company, role, application date, and status.
+We’ll start with LC 206 — Reverse Linked List. Have you worked with Java’s ListNode structure before?

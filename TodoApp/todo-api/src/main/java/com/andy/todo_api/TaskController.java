@@ -60,7 +60,8 @@ public class TaskController {
         Authentication authentication,
         @RequestParam(name = "completed", required = false) Boolean completed,
         @RequestParam(name = "page", defaultValue = "0") int page,
-        @RequestParam(name = "size", defaultValue = "5") int size
+        @RequestParam(name = "size", defaultValue = "5") int size,
+        @RequestParam(name = "search", defaultValue = "") String search
         /*
             RequestParam lets Spring read a value from the URL’s query string, such as ?completed=true.
             - name = "completed" identifies the URL parameter to read.
@@ -99,14 +100,22 @@ public class TaskController {
             Sort.by("id").ascending()
         );
 
+        // This removes leading and trailing spaces, so " java " becomes "java".
+        String keyword = search.trim(); 
+
         // if user wants to load all tasks no matter it is completed or not
         if (completed == null) {
-            return taskRepository.findByOwner_Id(userId, pageable);
+            return taskRepository.findByOwner_IdAndTitleContainingIgnoreCase(
+                userId, 
+                keyword, 
+                pageable
+            );
         }
 
-        return taskRepository.findByOwner_IdAndCompleted(
+        return taskRepository.findByOwner_IdAndCompletedAndTitleContainingIgnoreCase(
             userId, 
             completed,
+            keyword,
             pageable
         );
     }
