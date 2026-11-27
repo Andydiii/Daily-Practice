@@ -45,6 +45,8 @@ function App() {
   const pageSize = 2;
   const [activeSearch, setActiveSearch] = useState('');
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   /*
     1. loadTasks() sends GET /tasks with credentials: "include", so the browser sends its JSESSIONID cookie.
     2. The server uses that ID to find the server-side HTTP session. Login changed the session ID and saved an authenticated SecurityContext in that session.
@@ -246,6 +248,47 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
     }
   }
 
+
+  async function handleLogout() {
+    setErrorMessage('');
+    setLoggingOut(true);
+
+    try {
+      const response = await fetch('http://localhost:8080/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to log out');
+      }
+
+      // Remove the previous user's task data from the screen.
+      setTasks([]);
+      setPage(0);
+      setTotalPages(0);
+      setTotalElements(0);
+
+      // Reset the task inputs and filters.
+      setNewTaskTitle('');
+      setSearchText('');
+      setActiveSearch('');
+      setFilter('all');
+
+      // The old session and its CSRF token are no longer valid.
+      setCsrfToken('');
+      await loadCsrfToken();
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('Cound not log out. please try again');
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   // it runs after App mounts, and React Strict Mode may run it twice in development, as you saw earlier
   useEffect(() => {
     loadCsrfToken();
@@ -272,6 +315,9 @@ Only the server-side CSRF token is cleared by your login code. React’s csrfTok
       />
       <button type="button" onClick={handleLogin} disabled={!csrfToken}>
         login
+      </button>
+      <button type='button' onClick={handleLogout} disabled={loggingOut}>
+        {loggingOut ? 'Logging out...' : 'Logout'}
       </button>
 
       <label htmlFor="task-title">New task title</label>      
