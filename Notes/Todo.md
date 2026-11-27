@@ -250,13 +250,13 @@ Coding Practice — Linked Lists
 - [X] LC 21 — Merge Two Sorted Lists
 - [X] LC 141 — Linked List Cycle
 Todo Project — Logout
-- [ ] Add backend logout that invalidates the authenticated session.
-- [ ] Add a frontend Logout button that sends the CSRF token.
-- [ ] Clear displayed tasks and authentication state after logout; refresh the CSRF token for the next login.
-- [ ] Test logout, blocked access afterward, and logging back in; commit the changes.
+- [X] Add backend logout that invalidates the authenticated session.
+- [X] Add a frontend Logout button that sends the CSRF token.
+- [X] Clear displayed tasks and authentication state after logout; refresh the CSRF token for the next login.
+- [X] Test logout, blocked access afterward, and logging back in; commit the changes.
 Interview Fundamentals
-- [ ] Explain PUT vs PATCH, including partial updates and idempotency.
+- [X] Explain PUT vs PATCH, including partial updates and idempotency.
 Job Applications
-- [ ] Apply to 3 suitable Canada-based new-grad or junior developer positions.
-- [ ] Record the company, role, application date, and status.
+- [X] Apply to 3 suitable Canada-based new-grad or junior developer positions.
+- [X] Record the company, role, application date, and status.
 We’ll start with LC 206 — Reverse Linked List. Have you worked with Java’s ListNode structure before?
